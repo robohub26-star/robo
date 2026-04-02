@@ -1,0 +1,109 @@
+.courses-slider {
+  overflow: hidden;
+  position: relative;
+  margin-top: 48px;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+}
+
+.courses-track {
+  display: flex;
+  gap: 28px;
+  width: max-content;
+  animation: continuousScroll 40s linear infinite;
+  will-change: transform;
+}
+
+.courses-slider:hover .courses-track {
+  animation-play-state: paused;
+}
+
+.course-card {
+  width: 340px;
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: 28px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+}
+
+.course-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.course-img {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%);
+}
+
+.course-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+.course-card:hover .course-img img {
+  transform: scale(1.05);
+}
+
+.course-content {
+  padding: 24px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-badge {
+  align-self: flex-start;
+  background: rgba(0, 102, 255, 0.08);
+  color: var(--primary);
+  padding: 4px 14px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: "Outfit";
+  margin-bottom: 14px;
+}
+
+.course-card h3 {
+  font-family: "Outfit";
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+  color: var(--text-dark);
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.course-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .course-card {
+    width: 280px;
+  }
+}

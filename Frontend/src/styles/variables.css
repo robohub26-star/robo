@@ -1,0 +1,25 @@
+:root {
+  --pure-white: #ffffff;
+  --off-white: #fefefe;
+  --bg-light: #fbfdff;
+  --bg-secondary: #f8fafd;
+  --primary: #0066ff;
+  --primary-dark: #0052cc;
+  --primary-light: #3385ff;
+  --accent: #ff3366;
+  --accent-light: #ff668c;
+  --text-dark: #111827;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --border-light: #eef2f6;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}

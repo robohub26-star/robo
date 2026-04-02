@@ -1,0 +1,158 @@
+.models-carousel {
+  overflow: hidden;
+  position: relative;
+  margin-top: 60px;
+}
+
+.models-carousel::before,
+.models-carousel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.models-carousel::before {
+  left: 0;
+  background: linear-gradient(to right, var(--pure-white), transparent);
+}
+
+.models-carousel::after {
+  right: 0;
+  background: linear-gradient(to left, var(--pure-white), transparent);
+}
+
+.models-track {
+  display: flex;
+  gap: 28px;
+  width: max-content;
+  animation: scrollModels 40s linear infinite;
+  will-change: transform;
+}
+
+.models-carousel:hover .models-track {
+  animation-play-state: paused;
+}
+
+.model-card {
+  min-width: 340px;
+  max-width: 380px;
+  flex-shrink: 0;
+  padding: 28px;
+  border-radius: 28px;
+  background: var(--pure-white);
+  border: 1px solid var(--border-light);
+  transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  box-shadow: var(--shadow-xs);
+  position: relative;
+  overflow: hidden;
+}
+
+.model-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.model-card:hover::before {
+  transform: scaleX(1);
+}
+
+.model-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.model-card.highlight {
+  border: 1px solid var(--primary);
+  background: linear-gradient(
+    135deg,
+    var(--pure-white) 0%,
+    rgba(0, 102, 255, 0.02) 100%
+  );
+}
+
+.model-tag {
+  display: inline-block;
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-light) 100%
+  );
+  color: white;
+  font-size: 0.7rem;
+  padding: 5px 14px;
+  border-radius: 30px;
+  margin-bottom: 18px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.model-card h3 {
+  font-family: "Outfit";
+  font-size: 1.35rem;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.model-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  line-height: 1.55;
+}
+
+.model-card ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 18px;
+}
+
+.model-card ul li {
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+  padding-left: 22px;
+  position: relative;
+  color: var(--text-muted);
+}
+
+.model-card ul li::before {
+  content: "✨";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-size: 0.8rem;
+}
+
+.model-outcome {
+  background: var(--bg-secondary);
+  padding: 14px;
+  border-radius: 18px;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+  border-left: 3px solid var(--primary);
+}
+
+@media (max-width: 1024px) {
+  .models-carousel::before,
+  .models-carousel::after {
+    width: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .model-card {
+    min-width: 280px;
+  }
+}
