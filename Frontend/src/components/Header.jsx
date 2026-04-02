@@ -27,19 +27,20 @@ const Header = ({ activeSlide, onNavClick, headerRef }) => {
 
   return (
     <header id="main-header" className={location.pathname !== '/' ? 'scrolled' : ''} ref={headerRef}>
-      <div className="logo-wrap" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
+      <div className="logo-wrap" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
         <img src="/images/Logo.png" alt="RoboHub Logo" />
       </div>
 
       <nav id="top-nav">
         {location.pathname === '/' && navItems.map(item => (
-          <a
+          <button
             key={item.id}
             className={activeSlide === item.id ? 'active' : ''}
             onClick={() => handleNavClick(item.id)}
+            type="button"  // important to prevent form submission if inside a form
           >
             {item.label}
-          </a>
+          </button>
         ))}
 
         <div className="auth-nav-buttons">
