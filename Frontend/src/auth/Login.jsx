@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./Login.css";
 
-// 1. Added setToken as a prop
 export default function Login({ setToken }) {
   const navigate = useNavigate();
 
-  // Role state is removed from UI, we will just send "student" automatically
+  // NEW: Added role and fullName states
+  const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
 
   // Toast state
@@ -18,11 +19,13 @@ export default function Login({ setToken }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 2. Added role: "student" to the payload so the Python backend accepts it
-    const payload = { role: "student", email: email.trim(), password };
+    // NEW: Dynamically change the payload based on the selected role
+    const payload =
+      role === "student"
+        ? { role: "student", email: email.trim(), password }
+        : { role: "mentor", fullName: fullName.trim(), password };
 
     try {
-      // 3. Fixed URL to point to port 5000 and /api/login
       const res = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,7 +35,6 @@ export default function Login({ setToken }) {
       const data = await res.json();
 
       if (!res.ok) {
-        // backend returned HTTP error
         setToast({ message: data.message || "Login failed", type: "error" });
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
@@ -40,29 +42,31 @@ export default function Login({ setToken }) {
       }
 
       if (data.token) {
-        // Show success toast
+        // NEW: Update welcome message to handle mentor or student
         setToast({
-          message: `Welcome back, ${data.fullName || "Student"}!`,
+          message: `Welcome back, ${data.fullName || (role === "student" ? "Student" : "Mentor")}!`,
           type: "success",
         });
         setShowToast(true);
 
-        // 4. ADDED ALL THE TOKEN & SESSION LOGIC HERE
         if (setToken) setToken(data.token);
         sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("role", data.role || "student");
+        sessionStorage.setItem("role", data.role || role); // NEW: Save the correct role
         
         if (data.fullName) {
           sessionStorage.setItem("fullName", data.fullName);
         }
         
-        // Also keep localStorage just in case your quizzes need it
         localStorage.setItem("user", JSON.stringify(data));
 
-        // 5. Redirect directly to the student dashboard after a short delay
+        // NEW: Redirect dynamically based on the role
         setTimeout(() => {
           setShowToast(false);
-          navigate("/dashboard/student"); 
+          if (data.role === "mentor" || role === "mentor") {
+            navigate("/dashboard/mentor");
+          } else {
+            navigate("/dashboard/student"); 
+          }
         }, 1500);
 
       } else {
@@ -82,7 +86,6 @@ export default function Login({ setToken }) {
     }
   };
 
-  // Effect to toggle show class for sliding animation
   useEffect(() => {
     if (showToast) {
       const toastEl = document.querySelector(".toast");
@@ -125,17 +128,51 @@ export default function Login({ setToken }) {
           </p>
 
           <div className="login-card">
+            
+            {/* NEW: Added Role Selection Toggle */}
+            <div className="role-selection">
+              <button
+                type="button"
+                className={`role-toggle-btn ${role === "student" ? "active" : ""}`}
+                onClick={() => setRole("student")}
+              >
+                Student
+              </button>
+              <button
+                type="button"
+                className={`role-toggle-btn ${role === "mentor" ? "active" : ""}`}
+                onClick={() => setRole("mentor")}
+              >
+                Mentor
+              </button>
+            </div>
+
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  required
-                />
-              </div>
+              
+              {/* NEW: Conditional Field Rendering */}
+              {role === "student" ? (
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    required
+                  />
+                </div>
+              ) : (
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+              )}
 
               <div className="form-group">
                 <label>Password</label>
@@ -156,7 +193,7 @@ export default function Login({ setToken }) {
 
           <p className="login-footer-text">
             Don’t have an account?{" "}
-            <span onClick={() => navigate("/register")}>Sign up</span>
+            <span onClick={() => navigate("/register")} style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}>Sign up</span>
           </p>
         </div>
       </section>

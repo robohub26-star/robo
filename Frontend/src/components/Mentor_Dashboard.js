@@ -249,20 +249,20 @@ export default function MentorDashboard() {
   };
 
   return (
-    <div className="home-page">
-      {/* Navbar */}
-      <header className="hero-section">
-        <div className="container">
-          <nav className="nav">
-            <div className="logo">LearnFlow</div>
-            <div className="auth-buttons">
-              <span className="student-name">{fullName}</span>
+    <div className="dashboard-page-wrapper">
+      {/* Navbar - Updated to match Login Theme */}
+      <header className="dashboard-hero-section">
+        <div className="dashboard-nav-container">
+          <nav className="dashboard-nav">
+            <div className="logo-wrap">
+              <h2 style={{ margin: 0, color: '#111', fontFamily: 'Outfit', fontWeight: 800 }}>LearnFlow</h2>
+            </div>
+            <div className="dashboard-auth-buttons">
+              <span className="user-name-display">{fullName}</span>
               <button
-                className="button button-secondary"
+                className="logout-btn"
                 onClick={async () => {
                   const authToken = sessionStorage.getItem("token") || token;
-
-                  // Try to notify backend of logout (mentor token) — best effort
                   if (authToken) {
                     try {
                       await fetch("http://localhost:5000/api/logout", {
@@ -276,7 +276,6 @@ export default function MentorDashboard() {
                       console.error("Logout API failed:", err);
                     }
                   }
-
                   setToken(null);
                   sessionStorage.removeItem("token");
                   sessionStorage.removeItem("fullName");
@@ -375,7 +374,7 @@ export default function MentorDashboard() {
                         </button>
                       </div>
                     </td>
-                    <td data-label="Course">5G Technology Training</td>
+                    <td data-label="Course">ROS 2 Training</td>
                     <td data-label="Progress">
                       <div className="progress-cell">
                         <div className="mini-progress">

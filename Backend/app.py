@@ -2,14 +2,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
 import os
-import re
-import time
-from functools import lru_cache
 from dotenv import load_dotenv
 import random
 from auth import auth_bp
 from progress import progress_bp
-import cohere
 from flask_jwt_extended import JWTManager
 from mentor import mentor_bp
 
@@ -28,25 +24,10 @@ CORS(app)
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key")
 jwt = JWTManager(app)
 
-# Register the auth Blueprint
+# Register Blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(progress_bp)
 app.register_blueprint(mentor_bp)
-
-# ===============================
-# Cohere Client Initialization
-# ===============================
-COHERE_API_KEY = os.getenv("COHERE_API_KEY")
-client = None
-
-if COHERE_API_KEY:
-    client = cohere.ClientV2(api_key=COHERE_API_KEY)
-    print("✅ Cohere API initialized successfully")
-else:
-    print("⚠️ No Cohere API key found – using sample questions")
-
-print("COHERE_API_KEY:", COHERE_API_KEY)
-print("Client initialized?", client is not None)
 
 # ===============================
 # Training Days Data
@@ -58,175 +39,83 @@ TRAINING_DAYS = [
 ]
 
 # ===============================
-# Sample Questions (Fallback)
+# Get Questions — randomly picks 15 from 50 per level, shuffled every time
 # ===============================
-def get_sample_questions(day, level):
-    # Determine file path for the day
+def get_sample_questions(day, level, count=15):
     file_path = os.path.join(os.path.dirname(__file__), f"day{day}_questions.json")
 
-    # Check if JSON exists
     if os.path.exists(file_path):
         with open(file_path, "r") as f:
             data = json.load(f)
 
-        # Return the requested level if available, else default to beginner
-        return data.get(level.lower(), data.get("beginner"))
+        # Get questions for requested level, fallback to beginner
+        level_data = data.get(level.lower(), data.get("beginner", {}))
+        all_mcqs = level_data.get("mcqs", [])
 
-    # Fallback if file not found
+        if not all_mcqs:
+            return {"error": f"No questions found for level '{level}' in day {day}"}
+
+        # Shuffle first, then pick 'count' questions — fresh order every request
+        shuffled = all_mcqs.copy()
+        random.shuffle(shuffled)
+        sampled_mcqs = shuffled[:min(count, len(shuffled))]
+
+        return {
+            "day": day,
+            "level": level,
+            "total_available": len(all_mcqs),
+            "count": len(sampled_mcqs),
+            "mcqs": sampled_mcqs
+        }
+
+    # Hard fallback if JSON file not found
     return {
+        "error": f"day{day}_questions.json not found",
         "mcqs": [
-            {"question": "Fallback MCQ?", "options": {"A": "Yes", "B": "No", "C": "Maybe", "D": "None"}, "correct": "A"}
+            {
+                "question": "Fallback MCQ?",
+                "options": {"A": "Yes", "B": "No", "C": "Maybe", "D": "None"},
+                "correct": "A"
+            }
         ]
     }
-
-# ===============================
-# Caching for generated questions
-# ===============================
-question_cache = {}  # key = (day, level)
-
-# ===============================
-# Generate AI Questions with retry & cache (Cohere Chat API)
-# ===============================
-def generate_questions_safe(day, level, retries=3):
-    # Return cached questions if available
-    cache_key = (day, level)
-    if cache_key in question_cache:
-        return question_cache[cache_key]
-
-    topics = TRAINING_DAYS[day - 1]["topics"]
-
-        prompt = f"""
-        You are a senior ROS2 robotics instructor.
-
-        Generate EXACTLY:
-        - 15 multiple-choice questions (A, B, C, D) with correct answer
-
-        Difficulty Level: {level}
-        - beginner: simple concepts, easy questions
-        - intermediate: moderate difficulty, some technical depth
-        - advanced: deep technical concepts, complex questions
-
-        Topics to cover: {topics}
-
-        Return ONLY valid JSON in this format, nothing else:
-
-        {{
-        "mcqs": [
-            {{"question": "", "options": {{"A": "", "B": "", "C": "", "D": ""}}, "correct": "A", "explanation": ""}}
-        ]
-        }}
-        """
-
-    for attempt in range(retries):
-        try:
-            response = client.chat(
-                model="command-a-03-2025",  # use the latest Cohere chat model
-                messages=[
-                    {"role": "system", "content": "You are a senior ROS2 robotics instructor."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=2000
-            )
-
-            # Get text content directly
-            content = response.message.content[0].text if response.message.content else response.message.text
-            print("💡 Cohere Raw Response:", content)
-            
-            # Strip triple backticks if present
-            content_clean = re.sub(r"^```json|```$", "", content.strip(), flags=re.MULTILINE)
-
-            # Parse JSON
-            try:
-                questions = json.loads(content_clean)
-                question_cache[cache_key] = questions
-                return questions
-            except json.JSONDecodeError as e:
-                print("⚠️ JSON parsing failed:", e)
-
-            print("⚠️ JSON parsing failed, retrying...")
-
-        except Exception as e:
-            wait = (attempt + 1) * 2 + random.random()
-            print(f"❌ Cohere error: {e}, retrying in {wait:.1f}s...")
-            time.sleep(wait)
-
-    print("❌ All retries failed, using fallback")
-    questions = get_sample_questions(day, level)
-    question_cache[cache_key] = questions
-    return questions
 
 
 # ===============================
 # Generate Questions Route
+# POST /api/generate-questions
+# Body: { "day": 1, "level": "beginner" | "intermediate" | "advanced" }
 # ===============================
 @app.route("/api/generate-questions", methods=["POST"])
 def generate_questions():
     data = request.json
+
     day = data.get("day", 1)
     level = data.get("level", "beginner")
 
-    if not client:
-        print("⚠️ AI client not initialized, returning static questions")
-        return jsonify(get_sample_questions(day, level))
+    # Validate day
+    if day not in [1, 2, 3]:
+        return jsonify({"error": "Invalid day. Must be 1, 2, or 3."}), 400
 
-    questions = generate_questions_safe(day, level)
-    return jsonify(questions)
+    # Validate level
+    if level.lower() not in ["beginner", "intermediate", "advanced"]:
+        return jsonify({"error": "Invalid level. Must be beginner, intermediate, or advanced."}), 400
+
+    result = get_sample_questions(day, level)
+
+    if "error" in result and "mcqs" not in result:
+        return jsonify(result), 404
+
+    return jsonify(result), 200
+
 
 # ===============================
 # Final Assessment Route
+# GET /api/final-assessment
 # ===============================
 @app.route("/api/final-assessment", methods=["GET"])
 def get_final_assessment():
     try:
-        # Try to generate AI-based theory questions first (if client available)
-        if client:
-            try:
-                # Compose a prompt asking for 5 theory questions only
-                prompt = f"""
-                You are a senior ROS2 robotics instructor. Generate exactly 15 multiple-choice 
-                questions spanning basic ROS2, TF trees, URDF, RViz, Gazebo, SLAM, and Nav2.
-
-                Return ONLY valid JSON in this exact format:
-
-                {{
-                "mcqs": [
-                    {{"question": "", "options": {{"A": "", "B": "", "C": "", "D": ""}}, "correct": "A", "explanation": ""}}
-                ]
-                }}
-                """
-
-                response = client.chat(
-                    model="command-a-03-2025",
-                    messages=[
-                        {"role": "system", "content": "You are a senior 5G telecom instructor."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.6,
-                    max_tokens=1200
-                )
-
-                # Extract text content (handle V2 response shape)
-                content = response.message.content[0].text if response.message.content else response.message.text
-                content_clean = re.sub(r"^```json|```$", "", content.strip(), flags=re.MULTILINE)
-
-                try:
-                    ai_questions = json.loads(content_clean)
-                    theory = ai_questions.get("theory", [])
-
-                    # Validate we have at least 5 questions
-                    if isinstance(theory, list) and len(theory) >= 5:
-                        selected = random.sample(theory, 5)
-                        return jsonify({"theory": selected})
-                    # if not enough, fall through to fallback file
-                except json.JSONDecodeError:
-                    # fall through to file fallback
-                    pass
-            except Exception as e:
-                # any AI error -> fallback to final.json
-                print("⚠️ AI generation failed for final assessment:", e)
-
-        # Fallback: load static final.json
         file_path = os.path.join(os.path.dirname(__file__), "final.json")
 
         if not os.path.exists(file_path):
@@ -240,22 +129,29 @@ def get_final_assessment():
         if len(questions) < 5:
             return jsonify({"error": "Not enough questions in final.json"}), 400
 
-        # Randomly select 5 questions from the static file
-        selected_questions = random.sample(questions, 5)
-        return jsonify({"theory": selected_questions})
+        # Shuffle and pick 5 fresh every time
+        shuffled = questions.copy()
+        random.shuffle(shuffled)
+        selected_questions = shuffled[:5]
+
+        return jsonify({
+            "total_available": len(questions),
+            "count": len(selected_questions),
+            "theory": selected_questions
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 # ===============================
 # Health Check
+# GET /api/health
 # ===============================
 @app.route("/api/health")
 def health():
-    return jsonify({
-        "status": "OK",
-        "ai_enabled": client is not None
-    })
+    return jsonify({"status": "OK"})
+
 
 # ===============================
 # Run Server

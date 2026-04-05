@@ -210,7 +210,42 @@
   text-align: left;
 }
 
-/* FORM INPUTS */
+/* =======================
+   ROLE TOGGLE BUTTONS
+======================= */
+.role-selection {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.role-toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #333;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.role-toggle-btn:hover {
+  border-color: #111;
+}
+
+.role-toggle-btn.active {
+  background-color: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+/* =======================
+   FORM INPUTS
+======================= */
 .form-group {
   margin-bottom: 20px;
 }
@@ -231,13 +266,16 @@
   font-size: 1rem;
   outline: none;
   transition: border 0.3s;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
 }
 
 .form-group input:focus {
   border-color: #0066ff;
 }
 
-/* BUTTON */
+/* =======================
+   BUTTON
+======================= */
 .login-submit-button {
   width: 100%;
   background: #111;
@@ -256,7 +294,9 @@
   background: #333;
 }
 
-/* FOOTER */
+/* =======================
+   FOOTER
+======================= */
 .login-footer-text {
   margin-top: 25px;
   color: #666;
@@ -268,7 +308,9 @@
   cursor: pointer;
 }
 
-/* TOAST */
+/* =======================
+   TOAST
+======================= */
 .toast {
   position: fixed;
   top: 20px;

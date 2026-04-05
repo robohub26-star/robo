@@ -195,12 +195,14 @@ export default function StudentDashboard() {
               <div className="progress-section">
                 <div className="progress-labels">
                   <span>Progress</span>
-                  <span>{completedDays} of 5 days</span>
+                  {/* UPDATED: Changed from 5 days to 3 days */}
+                  <span>{completedDays} of 3 days</span>
                 </div>
                 <div className="progress-bar">
+                  {/* UPDATED: Changed math from /5 to /3 */}
                   <div
                     className="progress-fill"
-                    style={{ width: `${(completedDays / 5) * 100}%` }}
+                    style={{ width: `${(completedDays / 3) * 100}%` }}
                   ></div>
                 </div>
               </div>

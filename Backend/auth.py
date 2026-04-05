@@ -12,12 +12,12 @@ load_dotenv()
 auth_bp = Blueprint("auth", __name__)
 
 # -------------------------------
-# MongoDB Setup (single collection)
+# MongoDB Setup
 # -------------------------------
 MONGO_URI = os.getenv("MONGODB_URI")
 client = MongoClient(MONGO_URI)
 db = client["learnflow"]
-users_collection = db["users"]  # single collection for all users
+users_collection = db["users"]  
 
 # ===============================
 # Register Endpoint
@@ -30,20 +30,29 @@ def register():
     if role not in ["student", "mentor"]:
         return jsonify({"success": False, "message": "Invalid role"}), 400
 
+    email = data.get("email")
+    full_name = data.get("fullName")
+
+    # 1. Check if user already exists based on their role
+    if role == "student":
+        if users_collection.find_one({"email": email, "role": "student"}):
+            return jsonify({"success": False, "message": "Student with this email already exists"}), 400
+    else: # role is mentor
+        # Case insensitive search to see if mentor name is taken
+        if users_collection.find_one({"fullName": {"$regex": f"^{full_name}$", "$options": "i"}, "role": "mentor"}):
+            return jsonify({"success": False, "message": "Mentor with this name already exists"}), 400
+
+    # 2. Build user data
     user_data = {
-        "fullName": data.get("fullName"),
-        "email": data.get("email"),
+        "fullName": full_name,
+        "email": email, 
         "phone": data.get("phone"),
         "password": generate_password_hash(data.get("password")),
         "role": role,
-        "extra": data.get("extra")  # education or expertise
+        "extra": data.get("extra") 
     }
-
-    # Check if email already exists in the users collection
-    if users_collection.find_one({"email": user_data["email"]}):
-        return jsonify({"success": False, "message": "Email already exists"}), 400
     
-        # ✅ AUTO-CREATED FOR STUDENTS
+    # 3. Add extra fields if student
     if role == "student":
         user_data["progress"] = {
             "days": {
@@ -69,21 +78,22 @@ def login():
     if role not in ["student", "mentor"]:
         return jsonify({"success": False, "message": "Invalid role"}), 400
 
-    # Fetch user
+    # Fetch user securely
     if role == "student":
         email = data.get("email", "").strip()
         user = users_collection.find_one({"email": email, "role": "student"})
     else:
         full_name = data.get("fullName", "").strip()
-        user = users_collection.find_one({"fullName": full_name, "role": "mentor"})
+        # Case-insensitive search so "Skilling" and "skilling" both work
+        user = users_collection.find_one({"fullName": {"$regex": f"^{full_name}$", "$options": "i"}, "role": "mentor"})
 
     if not user:
-        return jsonify({"success": False, "message": "User not found"}), 404
+        return jsonify({"success": False, "message": f"{role.title()} not found. Please sign up or check your credentials."}), 404
 
     if not check_password_hash(user["password"], password):
         return jsonify({"success": False, "message": "Incorrect password"}), 401
 
-    # ✅ Set isActive to True on login
+    # Set isActive to True on login
     users_collection.update_one(
         {"_id": user["_id"]},
         {"$set": {"lastLogin": datetime.utcnow(), "isActive": True}}
@@ -109,7 +119,6 @@ def login():
 def logout():
     try:
         user_id = get_jwt_identity()
-        # ✅ Set isActive to False on logout
         users_collection.update_one(
             {"_id": ObjectId(user_id)},
             {"$set": {"lastLogin": None, "isActive": False}}

@@ -5,13 +5,13 @@
   width: 100%;
   height: 100vh;
   overflow-y: auto;
-  background: var(--surface);
+  background: #f8fafd; /* Matches Login background */
   font-family: 'Outfit', sans-serif;
-  color: var(--text-dark);
+  color: #333;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scrollbar-width: thin;
-  scrollbar-color: var(--primary) transparent;
+  scrollbar-color: #0066ff transparent;
 }
 
 .dashboard-page-wrapper::-webkit-scrollbar {
@@ -23,59 +23,38 @@
 }
 
 .dashboard-page-wrapper::-webkit-scrollbar-thumb {
-  background: var(--primary);
+  background: #0066ff;
   border-radius: 20px;
 }
 
 /* =======================
-   NAVBAR
+   HEADER / NAVBAR (Matches Login Theme)
 ======================= */
-.dashboard-header-wrapper {
+.dashboard-hero-section {
   position: sticky;
   top: 0;
-  z-index: 100;
   width: 100%;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-}
-
-.dashboard-header {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  transform: none !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  padding: 18px 0 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  padding: 15px 0;
 }
 
 .dashboard-nav-container {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 5vw;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .dashboard-nav {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
-}
-
-.logo-wrap img {
-  height: 36px;
-  width: auto;
-  display: block;
 }
 
 .dashboard-auth-buttons {
@@ -84,44 +63,33 @@
   gap: 24px;
 }
 
-.dashboard-auth-buttons .student-name {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 500;
-  font-size: 0.9rem;
-  letter-spacing: 0.2px;
-  color: var(--text-dark);
-}
-
-.dashboard-header .button-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.user-name-display {
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.4px;
-  padding: 10px 22px;
-  border-radius: 60px;
-  background: transparent;
-  color: var(--text-dark);
-  border: 1.5px solid var(--border);
+  font-size: 1.05rem;
+  color: #111;
+}
+
+.logout-btn {
+  background: #111;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.dashboard-header .button-secondary:hover {
-  background: #fff0f0;
-  color: #e53e3e;
-  border-color: #e53e3e;
-  transform: translateY(-1px);
-}
-
-.dashboard-header .button-secondary i {
-  transition: transform 0.2s ease;
-}
-
-.dashboard-header .button-secondary:hover i {
-  transform: translateX(2px);
+.logout-btn:hover {
+  background: #ef4444; /* Turns red on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* =======================
@@ -130,76 +98,30 @@
 .dashboard-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 56px 5vw 80px;
+  padding: 40px 5vw 80px;
   box-sizing: border-box;
+  font-family: "Outfit", sans-serif;
 }
 
 /* =======================
-   PAGE HEADING (matches global h1 style)
+   PAGE HEADING
 ======================= */
 .dashboard-title {
   font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
   line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--text-dark);
+  color: #111;
   margin-bottom: 10px;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) 0.05s forwards;
-}
-
-.dashboard-title span {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-}
-
-h1 span {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
+  animation: fadeUp 0.6s ease forwards;
 }
 
 .dashboard-subtitle {
   font-family: 'Outfit', sans-serif;
   font-size: 1.05rem;
-  color: var(--text-muted);
-  line-height: 1.65;
-  font-weight: 400;
+  color: #666;
   margin-bottom: 52px;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) 0.15s forwards;
-}
-
-/* =======================
-   EYEBROW LABEL (global style)
-======================= */
-.dashboard-eyebrow {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 500;
-  font-size: 0.8rem;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-bottom: 20px;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.dashboard-eyebrow::before {
-  content: '';
-  width: 36px;
-  height: 2px;
-  background: var(--primary);
-  border-radius: 2px;
+  animation: fadeUp 0.6s ease 0.15s forwards;
 }
 
 /* =======================
@@ -217,14 +139,12 @@ h1 span {
   align-items: center;
   gap: 20px;
   padding: 28px 24px;
-  border-radius: 20px;
-  background: var(--pure-white);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+  border-radius: 16px;
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+  animation: fadeUp 0.6s ease forwards;
 }
 
 .stat-card:nth-child(1) { animation-delay: 0.10s; }
@@ -234,7 +154,7 @@ h1 span {
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
 .stat-icon {
@@ -252,51 +172,158 @@ h1 span {
   font-family: 'Outfit', sans-serif;
   font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-dark);
+  color: #111;
   margin: 0;
 }
 
 .stat-text p {
+  font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: #666;
   margin: 4px 0 0;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 /* Colored variants */
-.stat-card.blue .stat-icon  { background: rgba(0, 87, 255, 0.08); color: var(--primary); }
-.stat-card.green .stat-icon { background: rgba(16, 185, 129, 0.1); color: #059669; }
-.stat-card.purple .stat-icon{ background: rgba(124, 58, 237, 0.1); color: var(--accent); }
-.stat-card.orange .stat-icon{ background: rgba(249, 115, 22, 0.1); color: #ea6f0e; }
+.stat-card.blue .stat-icon  { background: rgba(0, 102, 255, 0.1); color: #0066ff; }
+.stat-card.green .stat-icon { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.stat-card.purple .stat-icon{ background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+.stat-card.orange .stat-icon{ background: rgba(249, 115, 22, 0.1); color: #f97316; }
 
 .stat-card.orange {
   align-items: flex-start;
 }
-
 .stat-card.orange .stat-text {
   min-width: 0;
   flex: 1;
 }
 
-.stat-card.orange p {
-  font-size: 0.78rem;
-}
-
 /* =======================
-   SECTION TITLE (matches global eyebrow + heading style)
+   MENTOR TABLE & SECTION TITLES
 ======================= */
 .section-title {
   font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  font-size: 1.4rem;
-  letter-spacing: -0.01em;
-  color: var(--text-dark);
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: #111;
   margin-bottom: 22px;
 }
 
+.student-table-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+  overflow-x: auto;
+}
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.student-table th {
+  background: #f8fafd;
+  padding: 16px 20px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.student-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  color: #444;
+  vertical-align: middle;
+}
+
+.student-table tr:last-child td {
+  border-bottom: none;
+}
+
+.view-attempts-btn {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-attempts-btn:hover {
+  border-color: #111;
+  background: #111;
+  color: white;
+}
+
+/* Progress and Badges in Table */
+.progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mini-progress {
+  width: 80px;
+  height: 6px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.mini-progress-fill {
+  height: 100%;
+  background: #0066ff;
+  border-radius: 10px;
+}
+.score-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.score-badge.green { background: #d1fae5; color: #065f46; }
+.score-badge.yellow { background: #fef3c7; color: #92400e; }
+.score-badge.orange { background: #ffedd5; color: #9a3412; }
+.score-badge.red { background: #fee2e2; color: #991b1b; }
+
+.degree {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.degree.excellent { color: #10b981; }
+.degree.good { color: #f59e0b; }
+.degree.average { color: #f97316; }
+.degree.needs-improvement { color: #ef4444; }
+
+
 /* =======================
-   COURSES + INSTRUCTORS LAYOUT
+   STUDENT: EYEBROW LABEL
+======================= */
+.dashboard-eyebrow {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #0066ff;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-eyebrow::before {
+  content: '';
+  width: 36px;
+  height: 2px;
+  background: #0066ff;
+  border-radius: 2px;
+}
+
+/* =======================
+   STUDENT: COURSES + INSTRUCTORS LAYOUT
 ======================= */
 .courses-instructors-layout {
   display: grid;
@@ -309,21 +336,21 @@ h1 span {
 }
 
 /* =======================
-   COURSE CARD
+   STUDENT: COURSE CARD
 ======================= */
 .course-progress-card {
-  background: var(--pure-white);
+  background: white;
   padding: 38px;
   border-radius: 20px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid #ddd;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
   width: 100%;
   box-sizing: border-box;
   transition: box-shadow 0.3s ease;
 }
 
 .course-progress-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
 .course-progress-card h3 {
@@ -331,18 +358,17 @@ h1 span {
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--text-dark);
+  color: #111;
   margin: 16px 0 10px;
 }
 
 .course-progress-card > p {
   font-size: 0.95rem;
-  color: var(--text-muted);
+  color: #666;
   line-height: 1.65;
   margin-bottom: 28px;
 }
 
-/* Badge (global eyebrow treatment) */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -352,13 +378,12 @@ h1 span {
   font-size: 0.72rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--primary);
-  background: rgba(0, 87, 255, 0.08);
+  color: #0066ff;
+  background: rgba(0, 102, 255, 0.1);
   padding: 6px 14px;
   border-radius: 60px;
 }
 
-/* Progress bar */
 .progress-section {
   margin: 28px 0;
 }
@@ -369,25 +394,24 @@ h1 span {
   font-family: 'Outfit', sans-serif;
   font-weight: 500;
   font-size: 0.87rem;
-  color: var(--text-muted);
+  color: #666;
   margin-bottom: 10px;
 }
 
 .progress-bar {
   height: 8px;
-  background: rgba(0, 87, 255, 0.08);
+  background: rgba(0, 102, 255, 0.1);
   border-radius: 60px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+  background: linear-gradient(90deg, #0066ff 0%, #00d2ff 100%);
   border-radius: 60px;
   transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* CTA Button (matches global .btn) */
 .primary-btn {
   display: inline-flex;
   align-items: center;
@@ -398,22 +422,22 @@ h1 span {
   letter-spacing: 0.4px;
   padding: 14px 32px;
   border-radius: 60px;
-  background: var(--primary);
+  background: #0066ff;
   color: white;
   border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 102, 255, 0.2);
 }
 
 .primary-btn:hover {
-  background: var(--primary-dark);
+  background: #0052cc;
   transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 6px 15px rgba(0, 102, 255, 0.3);
 }
 
 /* =======================
-   INSTRUCTOR CARDS
+   STUDENT: INSTRUCTOR CARDS
 ======================= */
 .instructors-stack {
   display: flex;
@@ -422,20 +446,20 @@ h1 span {
 }
 
 .instructor-row-card {
-  background: var(--pure-white);
-  border: 1px solid var(--border);
+  background: white;
+  border: 1px solid #ddd;
   border-radius: 16px;
   padding: 18px 22px;
   display: flex;
   align-items: center;
   gap: 16px;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+  transition: all 0.3s ease;
 }
 
 .instructor-row-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
 }
 
 .instructor-avatar {
@@ -452,29 +476,108 @@ h1 span {
   letter-spacing: 0.5px;
 }
 
-.instructor-avatar.blue   { background: rgba(0, 87, 255, 0.1);   color: var(--primary); }
-.instructor-avatar.purple { background: rgba(124, 58, 237, 0.1); color: var(--accent); }
-.instructor-avatar.green  { background: rgba(16, 185, 129, 0.1); color: #059669; }
+.instructor-avatar.blue   { background: rgba(0, 102, 255, 0.1);  color: #0066ff; }
+.instructor-avatar.purple { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+.instructor-avatar.green  { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
 .instructor-row-card h4 {
   font-family: 'Outfit', sans-serif;
   font-size: 0.92rem;
   font-weight: 700;
-  color: var(--text-dark);
+  color: #111;
   margin: 0 0 3px;
 }
 
 .instructor-row-card p {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: #666;
   margin: 0;
   font-weight: 400;
 }
 
 /* =======================
+   MODAL STYLES (For Mentor Attempts)
+======================= */
+.attempts-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.attempts-modal {
+  background: white;
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.attempts-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.attempts-close:hover {
+  color: #111;
+}
+
+.attempts-section {
+  margin-top: 20px;
+}
+
+.attempts-section h4 {
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.mcq-list, .theory-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mcq-item, .theory-item {
+  background: #f8fafd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+}
+
+.mcq-q, .theory-q {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.mcq-ok { color: #10b981; }
+.mcq-wrong { color: #ef4444; }
+
+/* =======================
    ANIMATION
 ======================= */
 @keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
   to {
     opacity: 1;
     transform: translateY(0);
