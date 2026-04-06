@@ -16,10 +16,11 @@ header {
 
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-radius: 80px;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 header.scrolled {
@@ -67,8 +68,8 @@ nav#top-nav button.nav-link {
   margin: 0;
 
   /* Remove default button appearance (important for Safari/Chrome) */
-  appearance: none;
   -webkit-appearance: none;
+  appearance: none;
 
   text-decoration: none;
   transition: color 0.2s ease;
@@ -106,59 +107,73 @@ nav#top-nav button.nav-link.active::after {
   align-items: center;
   margin-left: 15px;
   padding-left: 25px;
-  border-left: 1px solid #ddd; /* Adds a visual divider line */
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.auth-nav-buttons button {
+  min-width: 96px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.25s ease;
 }
 
 .btn-nav-login {
-  background: transparent;
-  border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   color: #111;
   padding: 10px 24px;
-  border-radius: 40px;
   font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
 }
 
 .btn-nav-login:hover {
-  background: #f8fafd;
+  background: #fff;
   border-color: #0066ff;
   color: #0066ff;
+  transform: translateY(-1px);
 }
 
 .btn-nav-register {
-  background: #111;
+  background: linear-gradient(135deg, #111 0%, #333 100%);
   border: none;
   color: white;
-  padding: 10px 24px;
-  border-radius: 40px;
+  padding: 10px 26px;
   font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.12);
 }
 
 .btn-nav-register:hover {
-  background: #333;
+  background: linear-gradient(135deg, #222 0%, #444 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
 }
 
 /* RESPONSIVE FIXES FOR MOBILE */
 @media (max-width: 900px) {
-  nav#top-nav a {
-    display: none; /* Hides text links on small screens */
+  nav#top-nav button.nav-link {
+    display: none !important; /* Hides nav buttons on small screens */
   }
+
   .auth-nav-buttons {
-    border-left: none;
-    padding-left: 0;
+    border-left: none !important;
+    padding-left: 0 !important;
   }
+
   header {
-    top: 16px;
-    padding: 10px 24px;
+    padding: 10px 24px !important;
   }
 }

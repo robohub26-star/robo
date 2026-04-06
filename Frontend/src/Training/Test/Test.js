@@ -18,19 +18,81 @@ const Button = ({ onClick, children, disabled, style }) => (
 
 const testLevels = {
   1: [
-    { key: "beginner", icon: "📘", title: "Beginner", description: "Ubuntu basics, ROS2 setup, and core concepts (Nodes & Topics)", mcqs: 15 },
-    { key: "intermediate", icon: "📙", title: "Intermediate", description: "Publisher/Subscriber architecture and essential CLI commands", mcqs: 15 },
-    { key: "advanced", icon: "🎓", title: "Advanced", description: "Turtlesim hands-on, topic echoing, and cmd_vel mechanics", mcqs: 15 },
+    {
+      key: "beginner",
+      icon: "📘",
+      title: "Beginner",
+      description:
+        "Ubuntu basics, ROS2 setup, and core concepts (Nodes & Topics)",
+      mcqs: 15,
+    },
+    {
+      key: "intermediate",
+      icon: "📙",
+      title: "Intermediate",
+      description:
+        "Publisher/Subscriber architecture and essential CLI commands",
+      mcqs: 15,
+    },
+    {
+      key: "advanced",
+      icon: "🎓",
+      title: "Advanced",
+      description: "Turtlesim hands-on, topic echoing, and cmd_vel mechanics",
+      mcqs: 15,
+    },
   ],
   2: [
-    { key: "beginner", icon: "📘", title: "Beginner", description: "Understanding URDF robot structure, links, joints, and basic TF concepts", mcqs: 15 },
-    { key: "intermediate", icon: "📙", title: "Intermediate", description: "Dive into frame hierarchy and data visualization using RViz", mcqs: 15 },
-    { key: "advanced", icon: "🎓", title: "Advanced", description: "Gazebo 3D simulation, environment physics, and commanding simulated robots", mcqs: 15 },
+    {
+      key: "beginner",
+      icon: "📘",
+      title: "Beginner",
+      description:
+        "Understanding URDF robot structure, links, joints, and basic TF concepts",
+      mcqs: 15,
+    },
+    {
+      key: "intermediate",
+      icon: "📙",
+      title: "Intermediate",
+      description:
+        "Dive into frame hierarchy and data visualization using RViz",
+      mcqs: 15,
+    },
+    {
+      key: "advanced",
+      icon: "🎓",
+      title: "Advanced",
+      description:
+        "Gazebo 3D simulation, environment physics, and commanding simulated robots",
+      mcqs: 15,
+    },
   ],
   3: [
-    { key: "beginner", icon: "📘", title: "Beginner", description: "Basic SLAM concepts, mapping vs. localization, and core topics (/map, /scan)", mcqs: 15 },
-    { key: "intermediate", icon: "📙", title: "Intermediate", description: "Intermediate Nav2 architecture, goal flow, planners, and controllers", mcqs: 15 },
-    { key: "advanced", icon: "🎓", title: "Advanced", description: "Advanced TortoiseBot simulation, rqt_graph debugging, and remote SSH access", mcqs: 15 },
+    {
+      key: "beginner",
+      icon: "📘",
+      title: "Beginner",
+      description:
+        "Basic SLAM concepts, mapping vs. localization, and core topics (/map, /scan)",
+      mcqs: 15,
+    },
+    {
+      key: "intermediate",
+      icon: "📙",
+      title: "Intermediate",
+      description:
+        "Intermediate Nav2 architecture, goal flow, planners, and controllers",
+      mcqs: 15,
+    },
+    {
+      key: "advanced",
+      icon: "🎓",
+      title: "Advanced",
+      description:
+        "Advanced TortoiseBot simulation, rqt_graph debugging, and remote SSH access",
+      mcqs: 15,
+    },
   ],
 };
 
@@ -40,7 +102,7 @@ const RadioGroup = ({ value, onValueChange, children }) => (
       React.cloneElement(child, {
         onChange: onValueChange,
         checked: value === child.props.value,
-      })
+      }),
     )}
   </div>
 );
@@ -74,6 +136,10 @@ export default function Test() {
   const dayFromPath = Number(location.pathname.match(/day(\d+)/)?.[1]) || 1;
   const [day] = useState(dayFromPath);
 
+  const [timerSeconds, setTimerSeconds] = useState(10 * 60); // 7 minutes
+  const timerRef = useRef(null);
+  const isAutoSubmitting = useRef(false);
+
   // ── Normalize API response → only MCQs ──────────────────────────────────
   const normalizeQuestions = (data) => {
     const mcq = (data?.mcqs || []).map((q) => ({
@@ -96,7 +162,7 @@ export default function Test() {
       try {
         const response = await axios.post(
           "http://localhost:5000/api/generate-questions",
-          { day, level: skillLevel }
+          { day, level: skillLevel },
         );
         const normalized = normalizeQuestions(response.data);
         setQuestions(normalized);
@@ -137,7 +203,8 @@ export default function Test() {
     mcqAnswers.forEach((answer, idx) => {
       if (answer === questions.mcq[idx]?.correctAnswer) correctMcqs++;
     });
-    const finalScore = totalMcqs > 0 ? Math.round((correctMcqs / totalMcqs) * 100) : 0;
+    const finalScore =
+      totalMcqs > 0 ? Math.round((correctMcqs / totalMcqs) * 100) : 0;
 
     setSubmitting(true);
     try {
@@ -187,27 +254,36 @@ export default function Test() {
   // ── Anti-cheat ───────────────────────────────────────────────────────────
   const lastWarningTime = useRef(0);
   const autoSubmitTest = useCallback(() => {
+    isAutoSubmitting.current = true;
     alert("🚫 Test auto-submitted due to repeated rule violations.");
     submitTestInternal();
   }, [submitTestInternal]);
 
-  const registerCheatAttempt = useCallback((reason) => {
-    const now = Date.now();
-    if (now - lastWarningTime.current < 5000) return;
-    lastWarningTime.current = now;
-    setCheatWarnings((prev) => {
-      const next = prev + 1;
-      alert(
-        `⚠️ Warning ${next}/${MAX_WARNINGS}\n\n${reason}.\n\n` +
-        (next >= MAX_WARNINGS ? "Test will be auto-submitted." : "Further violations will auto-submit your test.")
-      );
-      if (next >= MAX_WARNINGS) autoSubmitTest();
-      return next;
-    });
-  }, [autoSubmitTest]);
+  const registerCheatAttempt = useCallback(
+    (reason) => {
+      if (isAutoSubmitting.current) return;
+      const now = Date.now();
+      if (now - lastWarningTime.current < 5000) return;
+      lastWarningTime.current = now;
+      setCheatWarnings((prev) => {
+        const next = prev + 1;
+        alert(
+          `⚠️ Warning ${next}/${MAX_WARNINGS}\n\n${reason}.\n\n` +
+            (next >= MAX_WARNINGS
+              ? "Test will be auto-submitted."
+              : "Further violations will auto-submit your test."),
+        );
+        if (next >= MAX_WARNINGS) autoSubmitTest();
+        return next;
+      });
+    },
+    [autoSubmitTest],
+  );
 
   useEffect(() => {
-    const handleVisibilityChange = () => { if (document.hidden) registerCheatAttempt("Tab switch detected"); };
+    const handleVisibilityChange = () => {
+      if (document.hidden) registerCheatAttempt("Tab switch detected");
+    };
     const handleBlur = () => registerCheatAttempt("Window lost focus");
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("blur", handleBlur);
@@ -219,7 +295,11 @@ export default function Test() {
 
   useEffect(() => {
     const blockCopy = (e) => {
-      if ((e.ctrlKey || e.metaKey) && ["c","v","x","a"].includes(e.key.toLowerCase())) e.preventDefault();
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        ["c", "v", "x", "a"].includes(e.key.toLowerCase())
+      )
+        e.preventDefault();
     };
     document.addEventListener("keydown", blockCopy);
     document.addEventListener("copy", (e) => e.preventDefault());
@@ -243,81 +323,143 @@ export default function Test() {
     return "#e53935";
   };
 
+  // ── TIMER ───────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!skillLevel || loading || testCompleted) return;
+
+    timerRef.current = setInterval(() => {
+      setTimerSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          isAutoSubmitting.current = true
+          submitTestInternal();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timerRef.current);
+  }, [skillLevel, loading, testCompleted, submitTestInternal]);
+
+  // Add this helper below getLearningDegree
+  const formatTime = (secs) => {
+    const m = Math.floor(secs / 60)
+      .toString()
+      .padStart(2, "0");
+    const s = (secs % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
   // ── RESULTS SCREEN ───────────────────────────────────────────────────────
   if (testCompleted) {
-    const correctCount = mcqAnswers.filter((a, i) => a === questions.mcq[i]?.correctAnswer).length;
+    const correctCount = mcqAnswers.filter(
+      (a, i) => a === questions.mcq[i]?.correctAnswer,
+    ).length;
 
     return (
-      <div className="test-page-container" style={{ maxWidth: 700, margin: "40px auto", padding: 40, background: "#161616", borderRadius: 14, boxShadow: "0 0 40px rgba(0,0,0,0.6)", textAlign: "center" }}>
-
+      <div className="test-page-container results-page">
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 30 }}>
-          <div style={{ fontSize: 50, color: "#f5a623", marginBottom: 10 }}>
+        <div className="results-header">
+          <div className="results-icon">
             <i className="fas fa-check-circle"></i>
           </div>
-          <h2 style={{ color: "white" }}>Assessment Completed!</h2>
-          <p style={{ color: "#aaa" }}>Day {day} — {skillLevel} Level</p>
+          <h2 className="results-title">Assessment Completed!</h2>
+          <p className="results-subtitle">
+            Day {day} — {skillLevel} Level
+          </p>
         </div>
 
         {/* Score Card */}
-        <div style={{ background: "#1f1f1f", padding: 30, borderRadius: 12, marginBottom: 30 }}>
-          <h1 style={{ fontSize: 56, margin: 0, color: getDegreeColor(score) }}>{score}%</h1>
-          <p style={{ color: "#aaa", marginTop: 4 }}>
+        <div className="results-score-card">
+          <h1
+            className="results-score-number"
+            style={{ color: getDegreeColor(score) }}
+          >
+            {score}%
+          </h1>
+          <p className="results-score-detail">
             {correctCount} / {questions.mcq.length} correct
           </p>
-          <div style={{ marginTop: 16, height: 12, background: "#333", borderRadius: 10, overflow: "hidden" }}>
-            <div style={{ width: `${score}%`, height: "100%", background: "linear-gradient(90deg,#2979ff,#8e2de2)", borderRadius: 10, transition: "width 0.6s ease" }} />
+          <div className="results-score-bar">
+            <div
+              className="results-score-fill"
+              style={{ width: `${score}%` }}
+            />
           </div>
-          <div style={{ marginTop: 12, fontSize: 16, fontWeight: 700, color: getDegreeColor(score) }}>
+          <div
+            className="results-degree"
+            style={{ color: getDegreeColor(score) }}
+          >
             {getLearningDegree(score)}
           </div>
         </div>
 
         {/* Stats row */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 30, flexWrap: "wrap" }}>
-          {[
-            { label: "Correct", value: correctCount, color: "#4caf50" },
-            { label: "Wrong", value: questions.mcq.length - correctCount, color: "#e53935" },
-            { label: "Total", value: questions.mcq.length, color: "#2979ff" },
-          ].map((s) => (
-            <div key={s.label} style={{ background: "#1f1f1f", borderRadius: 10, padding: "16px 28px", textAlign: "center" }}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: s.color }}>{s.value}</div>
-              <div style={{ color: "#aaa", fontSize: 13 }}>{s.label}</div>
+        <div className="results-stats">
+          <div className="results-stat">
+            <div className="results-stat-value correct"> {correctCount} </div>
+            <div className="results-stat-label">Correct</div>
+          </div>
+          <div className="results-stat">
+            <div className="results-stat-value wrong">
+              {" "}
+              {questions.mcq.length - correctCount}{" "}
             </div>
-          ))}
+            <div className="results-stat-label">Wrong</div>
+          </div>
+          <div className="results-stat">
+            <div className="results-stat-value total">
+              {" "}
+              {questions.mcq.length}{" "}
+            </div>
+            <div className="results-stat-label">Total</div>
+          </div>
         </div>
 
         {/* Answer Review */}
-        <div style={{ textAlign: "left" }}>
-          <h3 style={{ color: "white", marginBottom: 16 }}>Answer Review</h3>
+        <div className="results-review">
+          <h3 className="results-review-title">Answer Review</h3>
           {questions.mcq.map((q, idx) => {
             const userAnswer = mcqAnswers[idx];
             const isCorrect = userAnswer === q.correctAnswer;
             return (
-              <div key={idx} style={{ background: "#1f1f1f", padding: 16, borderRadius: 10, marginBottom: 16, borderLeft: `4px solid ${isCorrect ? "#4caf50" : "#e53935"}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <span style={{ color: "#aaa", fontSize: 13 }}>Question {idx + 1}</span>
-                  <span style={{ color: isCorrect ? "#4caf50" : "#e53935", fontWeight: 700, fontSize: 13 }}>
+              <div
+                key={idx}
+                className={`results-review-item ${isCorrect ? "correct-border" : "wrong-border"}`}
+              >
+                <div className="results-review-question-header">
+                  <span className="results-review-question-number">
+                    Question {idx + 1}
+                  </span>
+                  <span
+                    className={`results-review-status ${isCorrect ? "status-correct" : "status-wrong"}`}
+                  >
                     {isCorrect ? "✓ Correct" : "✗ Wrong"}
                   </span>
                 </div>
-                <p style={{ color: "white", marginBottom: 12, fontWeight: 600 }}>{q.question}</p>
+                <p className="results-review-question-text">{q.question}</p>
                 {q.options.map((option, oIdx) => {
                   const isUserChoice = oIdx === userAnswer;
                   const isAnswer = oIdx === q.correctAnswer;
-                  let bg = "#2c2c2c";
-                  if (isAnswer) bg = "#0a522f";
-                  if (isUserChoice && !isAnswer) bg = "#4a1212";
+                  let optionClass = "results-review-option";
+                  if (isAnswer) optionClass += " option-correct";
+                  if (isUserChoice && !isAnswer)
+                    optionClass += " option-wrong-choice";
                   return (
-                    <div key={oIdx} style={{ background: bg, color: "white", padding: "10px 14px", borderRadius: 6, marginBottom: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div key={oIdx} className={optionClass}>
                       <span>{option}</span>
-                      {isAnswer && <span style={{ color: "#4caf50", fontSize: 12 }}>✓ Correct</span>}
-                      {isUserChoice && !isAnswer && <span style={{ color: "#e57373", fontSize: 12 }}>✗ Your answer</span>}
+                      {isAnswer && (
+                        <span className="option-correct-mark">✓ Correct</span>
+                      )}
+                      {isUserChoice && !isAnswer && (
+                        <span className="option-wrong-mark">✗ Your answer</span>
+                      )}
                     </div>
                   );
                 })}
                 {q.explanation && (
-                  <div style={{ marginTop: 8, padding: "8px 12px", background: "#1a2a1a", borderRadius: 6, color: "#81c784", fontSize: 13 }}>
+                  <div className="results-review-explanation">
                     💡 {q.explanation}
                   </div>
                 )}
@@ -327,21 +469,19 @@ export default function Test() {
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 36, flexWrap: "wrap" }}>
+        <div className="results-actions">
           <button
-            className="btn"
+            className="btn btn-primary"
             onClick={() => navigate("/courses/5g-training")}
-            style={{ background: "linear-gradient(90deg,#2979ff,#8e2de2)", color: "white", padding: "13px 28px", borderRadius: 8, fontSize: 15, border: "none" }}
           >
-            <i className="fas fa-arrow-left" style={{ marginRight: 8 }}></i>
+            <i className="fas fa-arrow-left"></i>
             Back to Training
           </button>
           <button
-            className="btn"
+            className="btn btn-secondary"
             onClick={() => navigate("/dashboard/student")}
-            style={{ background: "#2c2c2c", color: "white", padding: "13px 28px", borderRadius: 8, fontSize: 15, border: "1px solid #444" }}
           >
-            <i className="fas fa-tachometer-alt" style={{ marginRight: 8 }}></i>
+            <i className="fas fa-tachometer-alt"></i>
             Dashboard
           </button>
         </div>
@@ -353,14 +493,22 @@ export default function Test() {
   if (!skillLevel) {
     return (
       <div className="test-page-container no-select">
-        <h2 style={{ marginTop: 40, color: "white" }}>Choose Your Test Level — Day {day}</h2>
-        <div style={{ display: "flex", justifyContent: "center", gap: 40, marginTop: 40, flexWrap: "wrap" }}>
+        <h2 className="level-selection-title">
+          Choose Your Test Level — Day {day}
+        </h2>
+        <div className="level-selection-grid">
           {testLevels[day].map((lvl) => (
-            <div key={lvl.key} className="test-option" onClick={() => setSkillLevel(lvl.key)}>
+            <div
+              key={lvl.key}
+              className="test-option"
+              onClick={() => setSkillLevel(lvl.key)}
+            >
               <div className="test-icon">{lvl.icon}</div>
               <h2>{lvl.title}</h2>
               <p>{lvl.description}</p>
-              <ul><li>{lvl.mcqs} MCQs</li></ul>
+              <ul>
+                <li>{lvl.mcqs} MCQs</li>
+              </ul>
             </div>
           ))}
         </div>
@@ -371,15 +519,19 @@ export default function Test() {
   // ── LOADING ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="test-page-container" style={{ textAlign: "center", paddingTop: 80 }}>
-        <i className="fas fa-spinner fa-spin" style={{ fontSize: 36, color: "#2979ff" }}></i>
-        <p style={{ color: "#aaa", marginTop: 16 }}>Loading questions...</p>
+      <div className="test-page-container loading-container">
+        <i className="fas fa-spinner fa-spin loading-spinner"></i>
+        <p className="loading-text">Loading questions...</p>
       </div>
     );
   }
 
   if (!questions.mcq.length) {
-    return <div style={{ color: "white", textAlign: "center", marginTop: 80 }}>No questions available. Please try again.</div>;
+    return (
+      <div className="error-message">
+        No questions available. Please try again.
+      </div>
+    );
   }
 
   const currentQ = questions.mcq[currentQuestion];
@@ -387,47 +539,67 @@ export default function Test() {
   // ── QUIZ SCREEN ──────────────────────────────────────────────────────────
   return (
     <div className="test-page-container no-select">
-
       {/* Progress Header */}
       <div className="test-header">
         <div className="test-progress-section">
           <div className="test-progress-labels">
-            <span>Day {day} — {skillLevel} Level — Multiple Choice</span>
-            <span>Question {currentQuestion + 1} of {questions.mcq.length}</span>
+            <span>
+              Day {day} — {skillLevel} Level — Multiple Choice
+            </span>
+            <span>
+              Question {currentQuestion + 1} of {questions.mcq.length}
+            </span>
           </div>
           <div className="test-progress-bar">
             <div
               className="test-progress-fill"
-              style={{ width: `${((currentQuestion + 1) / questions.mcq.length) * 100}%` }}
+              style={{
+                width: `${((currentQuestion + 1) / questions.mcq.length) * 100}%`,
+              }}
             />
           </div>
           <div className="test-progress-labels">
-            <span>Overall Progress: {currentQuestion + 1} of {questions.mcq.length}</span>
+            <span>
+              Overall Progress: {currentQuestion + 1} of {questions.mcq.length}
+            </span>
+          </div>
+        </div>
+
+        {/* ← Timer added here — fixes both unused-vars warnings */}
+        <div
+          className={`test-timer ${timerSeconds <= 60 ? "timer-critical" : timerSeconds <= 120 ? "timer-warning" : ""}`}
+        >
+          <i className="fas fa-clock"></i>
+          <span>{formatTime(timerSeconds)}</span>
+          <div className="timer-bar">
+            <div
+              className="timer-bar-fill"
+              style={{ width: `${(timerSeconds / (10 * 60)) * 100}%` }}
+            />
           </div>
         </div>
       </div>
 
       {/* Question Card */}
-      <div className="test-test-container" style={{ maxWidth: 700, margin: "30px auto", padding: 40, background: "#161616", borderRadius: 14, boxShadow: "0 0 40px rgba(0,0,0,0.6)" }}>
-
+      <div className="test-test-container">
         {/* Cheat Warning Banner */}
         {cheatWarnings > 0 && cheatWarnings < MAX_WARNINGS && (
-          <div style={{ background: "#4a1212", color: "#fff", padding: 10, borderRadius: 6, marginBottom: 15, fontWeight: "bold" }}>
-            ⚠️ Warning {cheatWarnings}/{MAX_WARNINGS}: Do not switch tabs or apps.
+          <div className="cheat-warning-banner">
+            ⚠️ Warning {cheatWarnings}/{MAX_WARNINGS}: Do not switch tabs or
+            apps.
           </div>
         )}
 
         {/* Answered counter */}
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
-          <span style={{ fontSize: 13, color: "#aaa" }}>
-            Answered: {mcqAnswers.filter((a) => a !== undefined).length} / {questions.mcq.length}
+        <div className="answered-counter">
+          <span>
+            Answered: {mcqAnswers.filter((a) => a !== undefined).length} /{" "}
+            {questions.mcq.length}
           </span>
         </div>
 
         <div className="test-question-wrapper">
-          <h2 className="test-question-title" style={{ color: "white", textAlign: "left" }}>
-            {currentQ?.question}
-          </h2>
+          <h2 className="test-question-title">{currentQ?.question}</h2>
           <RadioGroup
             value={mcqAnswers[currentQuestion]?.toString()}
             onValueChange={(val) => handleMcqAnswer(parseInt(val))}
@@ -452,17 +624,24 @@ export default function Test() {
           <Button
             onClick={handleSubmit}
             disabled={!allAnswered || submitting}
+            className={allAnswered ? "btn-submit-ready" : "btn-submit-disabled"}
             style={{
-              background: allAnswered ? "linear-gradient(90deg,#2979ff,#8e2de2)" : "#444",
+              background: allAnswered
+                ? "linear-gradient(90deg,#2979ff,#8e2de2)"
+                : "#444",
               color: "white",
               opacity: allAnswered ? 1 : 0.6,
               cursor: allAnswered ? "pointer" : "not-allowed",
             }}
           >
             {submitting ? (
-              <><i className="fas fa-spinner fa-spin"></i>&nbsp;Submitting...</>
+              <>
+                <i className="fas fa-spinner fa-spin"></i>&nbsp;Submitting...
+              </>
             ) : (
-              <><i className="fas fa-check"></i>&nbsp;Submit Test</>
+              <>
+                <i className="fas fa-check"></i>&nbsp;Submit Test
+              </>
             )}
           </Button>
         ) : (
@@ -474,9 +653,10 @@ export default function Test() {
 
       {/* Warning: unanswered questions on last screen */}
       {isLastQuestion && !allAnswered && (
-        <p style={{ textAlign: "center", color: "#f5a623", marginTop: 10, fontSize: 14 }}>
-          ⚠️ Please answer all {questions.mcq.length} questions before submitting.
-          ({mcqAnswers.filter((a) => a !== undefined).length} / {questions.mcq.length} answered)
+        <p className="unanswered-warning">
+          ⚠️ Please answer all {questions.mcq.length} questions before
+          submitting. ({mcqAnswers.filter((a) => a !== undefined).length} /{" "}
+          {questions.mcq.length} answered)
         </p>
       )}
     </div>

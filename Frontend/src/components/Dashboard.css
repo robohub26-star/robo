@@ -5,15 +5,14 @@
   width: 100%;
   height: 100vh;
   overflow-y: auto;
-  background: #f8fafd; /* Matches Login background */
+  background: #f8fafd;
   font-family: 'Outfit', sans-serif;
   color: #333;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scrollbar-width: thin;
-  scrollbar-color: #0066ff transparent;
 }
 
+/* Safari, older Chrome, Samsung Internet */
 .dashboard-page-wrapper::-webkit-scrollbar {
   width: 6px;
 }
@@ -27,6 +26,10 @@
   border-radius: 20px;
 }
 
+.dashboard-page-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #0052cc;
+}
+
 /* =======================
    HEADER / NAVBAR (Matches Login Theme)
 ======================= */
@@ -36,8 +39,8 @@
   width: 100%;
   z-index: 1000;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
   padding: 15px 0;

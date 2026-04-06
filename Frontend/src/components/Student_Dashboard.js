@@ -211,7 +211,7 @@ export default function StudentDashboard() {
                 className="primary-btn"
                 onClick={() => navigate("/courses/5g-training")}
               >
-                Start Learning →
+                Start Assessment →
               </button>
             </div>
           </div>

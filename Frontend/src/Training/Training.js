@@ -12,6 +12,16 @@ export default function Training() {
     totalDays: 3,
   });
 
+  // Score card modal state
+  const [showScoreCard, setShowScoreCard] = useState(false);
+  const [scoreData, setScoreData] = useState({
+    day1Score: 0,
+    day2Score: 0,
+    day3Score: 0,
+    averageScore: 0,
+    totalScore: 0,
+  });
+
   // Use token stored in sessionStorage (set at login)
   const fetchProgress = useCallback(async () => {
     const token = sessionStorage.getItem("token");
@@ -44,6 +54,21 @@ export default function Training() {
         dayCompleted: data.completedDays || 0,
         totalDays: 3,
       });
+
+      // Extract scores from individual days
+      const daysData = data.progress || {};
+      const scores = {
+        day1Score: daysData["1"]?.score || 0,
+        day2Score: daysData["2"]?.score || 0,
+        day3Score: daysData["3"]?.score || 0,
+        averageScore: parseInt(data.averageScore) || 0,
+        totalScore: 0,
+      };
+
+      // Calculate total score (sum of all completed days)
+      scores.totalScore = scores.day1Score + scores.day2Score + scores.day3Score;
+
+      setScoreData(scores);
     } catch (err) {
       console.error("Failed to load progress", err);
     }
@@ -208,8 +233,8 @@ export default function Training() {
               disabled={progress.dayCompleted < progress.totalDays}
               onClick={() => {
                 if (progress.dayCompleted === progress.totalDays) {
-                  // Navigate to your score card page or back to dashboard
-                  navigate("/dashboard/student"); 
+                  // Open score card modal instead of navigating
+                  setShowScoreCard(true);
                 }
               }}
               style={{
@@ -245,6 +270,118 @@ export default function Training() {
           </div>
 
         </div>
+
+        {/* Score Card Modal */}
+        {showScoreCard && (
+          <div className="modal-overlay" onClick={() => setShowScoreCard(false)}>
+            <div className="score-card-modal" onClick={(e) => e.stopPropagation()}>
+              <button
+                className="modal-close-btn"
+                onClick={() => setShowScoreCard(false)}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+
+              <div className="score-card-header">
+                <i className="fas fa-trophy score-icon"></i>
+                <h2>Course Completion Summary</h2>
+                <p>ROS 2 Training - All Days Combined</p>
+              </div>
+
+              <div className="score-card-content">
+                {/* Individual Day Scores */}
+                <div className="day-scores-grid">
+                  <div className="day-score-card">
+                    <h4>Day 1</h4>
+                    <div className="score-circle">
+                      <span className="score-value">{scoreData.day1Score}</span>
+                      <span className="score-unit">%</span>
+                    </div>
+                    <p className="score-label">Foundation of ROS2</p>
+                  </div>
+
+                  <div className="day-score-card">
+                    <h4>Day 2</h4>
+                    <div className="score-circle">
+                      <span className="score-value">{scoreData.day2Score}</span>
+                      <span className="score-unit">%</span>
+                    </div>
+                    <p className="score-label">Virtualizing the Robot</p>
+                  </div>
+
+                  <div className="day-score-card">
+                    <h4>Day 3</h4>
+                    <div className="score-circle">
+                      <span className="score-value">{scoreData.day3Score}</span>
+                      <span className="score-unit">%</span>
+                    </div>
+                    <p className="score-label">Autonomy in Action</p>
+                  </div>
+                </div>
+
+                {/* Cumulative Statistics */}
+                <div className="cumulative-stats">
+                  <div className="stat-item">
+                    <label>Average Score</label>
+                    <div className="stat-value">{scoreData.averageScore}%</div>
+                  </div>
+
+                  <div className="stat-item">
+                    <label>Total Points</label>
+                    <div className="stat-value">{scoreData.totalScore}</div>
+                  </div>
+
+                  <div className="stat-item">
+                    <label>Completion Status</label>
+                    <div className="stat-value">
+                      <span className="status-badge">Completed</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Performance Feedback */}
+                <div className="performance-feedback">
+                  {scoreData.averageScore >= 80 && (
+                    <div className="feedback excellent">
+                      <i className="fas fa-star"></i>
+                      <p>Excellent! You've mastered the ROS 2 training course!</p>
+                    </div>
+                  )}
+                  {scoreData.averageScore >= 60 && scoreData.averageScore < 80 && (
+                    <div className="feedback good">
+                      <i className="fas fa-thumbs-up"></i>
+                      <p>Great job! You have a solid understanding of ROS 2 concepts.</p>
+                    </div>
+                  )}
+                  {scoreData.averageScore < 60 && scoreData.averageScore > 0 && (
+                    <div className="feedback fair">
+                      <i className="fas fa-lightbulb"></i>
+                      <p>Good effort! Keep practicing to master the concepts.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="score-card-actions">
+                <button
+                  className="action-btn secondary-btn"
+                  onClick={() => setShowScoreCard(false)}
+                >
+                  Close
+                </button>
+                <button
+                  className="action-btn primary-btn"
+                  onClick={() => {
+                    setShowScoreCard(false);
+                    navigate("/dashboard/student");
+                  }}
+                >
+                  Back to Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

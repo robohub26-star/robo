@@ -27,8 +27,12 @@ def register():
     data = request.json
     role = data.get("role")
 
-    if role not in ["student", "mentor"]:
-        return jsonify({"success": False, "message": "Invalid role"}), 400
+    # Only allow student registration through public endpoint
+    if role != "student":
+        return jsonify({
+            "success": False, 
+            "message": "Only student registration is allowed through this endpoint"
+        }), 403
 
     email = data.get("email")
     full_name = data.get("fullName")
@@ -65,6 +69,37 @@ def register():
     users_collection.insert_one(user_data)
     return jsonify({"success": True, "message": f"{role.title()} registered successfully"})
 
+# Add this new endpoint for admin creation
+@auth_bp.route("/api/create-admin", methods=["POST"])
+def create_admin():
+    admin_secret = os.getenv("ADMIN_CREATION_SECRET")
+    data = request.json
+
+    if not admin_secret or data.get("adminSecret") != admin_secret:
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+
+    # Prevent duplicate admins
+    if users_collection.find_one({"email": data.get("email"), "role": "mentor"}):
+        return jsonify({"success": False, "message": "Admin already exists"}), 400
+
+    user_data = {
+        "fullName": data.get("fullName"),
+        "email": data.get("email"),
+        "phone": data.get("phone"),
+        "password": generate_password_hash(data.get("password")),
+        "role": "mentor",
+        "extra": data.get("extra"),
+        "isApproved": True,
+        "isActive": False,
+        "createdAt": datetime.utcnow()
+    }
+
+    users_collection.insert_one(user_data)
+
+    return jsonify({
+        "success": True,
+        "message": "Admin account created successfully"
+    }), 201
 
 # ===============================
 # Login Endpoint

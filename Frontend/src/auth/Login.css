@@ -4,7 +4,7 @@
 .login-page-wrapper {
   min-height: 100vh;
   background-color: #f8fafd;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
 }
 
 /* =======================
@@ -26,6 +26,7 @@
 
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-radius: 80px;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -157,6 +158,10 @@
 
 /* RESPONSIVE FIXES */
 @media (max-width: 900px) {
+  .auth-buttons {
+    padding-left: 37% !important;
+  }
+
   .login-nav a {
     display: none;
   }
@@ -334,4 +339,73 @@
 
 .toast.error {
   background-color: #ef4444;
+}
+
+/* Add to both Login.css and Register.css */
+
+/* Secret hint styling */
+.secret-hint {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  color: #888;
+  font-size: 0.75rem;
+}
+
+.admin-hint {
+  text-align: center;
+  margin-top: 20px;
+  padding: 10px;
+  color: #999;
+  font-size: 0.75rem;
+  border-top: 1px solid #eee;
+}
+
+/* Mentor option special styling */
+.mentor-option {
+  border-color: #ff9800;
+  background: rgba(255, 152, 0, 0.05);
+}
+
+.mentor-option:hover {
+  border-color: #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+}
+
+.admin-badge {
+  background: #ff9800;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+/* Role toggle buttons for mentor */
+.role-toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #333;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.role-toggle-btn.active {
+  background-color: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+.role-selection {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }

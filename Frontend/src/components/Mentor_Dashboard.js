@@ -8,7 +8,7 @@ export default function MentorDashboard() {
 
   const [token, setToken] = useState(sessionStorage.getItem("token"));
   const [fullName, setFullName] = useState(
-    sessionStorage.getItem("fullName") || "Mentor"
+    sessionStorage.getItem("fullName") || "Mentor",
   );
 
   const [totalCourses, setTotalCourses] = useState(0);
@@ -87,11 +87,13 @@ export default function MentorDashboard() {
       if (s._id && s._id.$oid) return s._id.$oid; // some APIs return { _id: { $oid: "..." } }
       if (s.id && typeof s.id === "string") return s.id;
       if (s.userId && typeof s.userId === "string") return s.userId;
-      if (s.user && s.user._id && typeof s.user._id === "string") return s.user._id;
+      if (s.user && s.user._id && typeof s.user._id === "string")
+        return s.user._id;
       if (s.user && s.user._id && s.user._id.$oid) return s.user._id.$oid;
       // fallback: try to stringify a plain ObjectId-like value
       try {
-        if (s._id && typeof s._id === "object" && s._id.toString) return s._id.toString();
+        if (s._id && typeof s._id === "object" && s._id.toString)
+          return s._id.toString();
       } catch (e) {}
       return null;
     };
@@ -101,13 +103,16 @@ export default function MentorDashboard() {
     if (!id) {
       if (student && student.email) {
         try {
-          const res = await fetch(`http://localhost:5000/progress/by-email/${encodeURIComponent(student.email)}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${authToken}`,
+          const res = await fetch(
+            `http://localhost:5000/progress/by-email/${encodeURIComponent(student.email)}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authToken}`,
+              },
             },
-          });
+          );
 
           if (res.status === 401 || res.status === 403) {
             alert("Not authorized to view attempts");
@@ -121,22 +126,33 @@ export default function MentorDashboard() {
           }
 
           const daysObj = data.days || {};
-          const days = Object.keys(daysObj).sort((a,b)=> Number(a)-Number(b));
+          const days = Object.keys(daysObj).sort(
+            (a, b) => Number(a) - Number(b),
+          );
           setAvailableDays(days);
-          const defaultDay = days.length ? days[days.length-1] : day;
+          const defaultDay = days.length ? days[days.length - 1] : day;
           setSelectedDay(defaultDay);
           setSelectedStudent(student);
           // fetch attempts for the default day using by-email attempts endpoint
           try {
-            const r2 = await fetch(`http://localhost:5000/progress/attempts/by-email/${encodeURIComponent(student.email)}/${defaultDay}`, {
-              method: "GET",
-              headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
-            });
+            const r2 = await fetch(
+              `http://localhost:5000/progress/attempts/by-email/${encodeURIComponent(student.email)}/${defaultDay}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${authToken}`,
+                },
+              },
+            );
             const d2 = await r2.json();
             setAttemptData(d2);
             setAttemptsOpen(true);
           } catch (err2) {
-            console.error("Failed fetching attempts by email for default day:", err2);
+            console.error(
+              "Failed fetching attempts by email for default day:",
+              err2,
+            );
             setAttemptData({ mcq: [], theory: [] });
             setAttemptsOpen(true);
           }
@@ -150,18 +166,23 @@ export default function MentorDashboard() {
       }
 
       console.warn("Unable to determine student id for row:", student);
-      alert("Student id not available for this row. Check console for the student object to debug.");
+      alert(
+        "Student id not available for this row. Check console for the student object to debug.",
+      );
       return;
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/progress/attempts/${id}/${day}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
+      const res = await fetch(
+        `http://localhost:5000/progress/attempts/${id}/${day}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
         },
-      });
+      );
 
       if (res.status === 401 || res.status === 403) {
         alert("Not authorized to view attempts");
@@ -176,12 +197,15 @@ export default function MentorDashboard() {
 
       // Determine available days by fetching full progress (so mentor can switch days)
       try {
-        const p = await fetch(`http://localhost:5000/progress/${id}`, { method: "GET", headers: { "Content-Type": "application/json" } });
+        const p = await fetch(`http://localhost:5000/progress/${id}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
         const pjson = await p.json();
         const daysObj = pjson.progress || {};
-        const days = Object.keys(daysObj).sort((a,b)=> Number(a)-Number(b));
+        const days = Object.keys(daysObj).sort((a, b) => Number(a) - Number(b));
         setAvailableDays(days);
-        const defaultDay = days.length ? days[days.length-1] : day;
+        const defaultDay = days.length ? days[days.length - 1] : day;
         setSelectedDay(defaultDay);
       } catch (e) {
         setAvailableDays([]);
@@ -210,19 +234,41 @@ export default function MentorDashboard() {
       if (s._id && s._id.$oid) return s._id.$oid;
       if (s.id && typeof s.id === "string") return s.id;
       if (s.userId && typeof s.userId === "string") return s.userId;
-      if (s.user && s.user._id && typeof s.user._id === "string") return s.user._id;
-      try { if (s._id && typeof s._id === "object" && s._id.toString) return s._id.toString(); } catch(e){}
+      if (s.user && s.user._id && typeof s.user._id === "string")
+        return s.user._id;
+      try {
+        if (s._id && typeof s._id === "object" && s._id.toString)
+          return s._id.toString();
+      } catch (e) {}
       return null;
     };
 
     const id = extractId(selectedStudent);
     try {
       if (id) {
-        const r = await fetch(`http://localhost:5000/progress/attempts/${id}/${newDay}`, { method: "GET", headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` } });
+        const r = await fetch(
+          `http://localhost:5000/progress/attempts/${id}/${newDay}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
         const d = await r.json();
         setAttemptData(d);
       } else if (selectedStudent.email) {
-        const r = await fetch(`http://localhost:5000/progress/attempts/by-email/${encodeURIComponent(selectedStudent.email)}/${newDay}`, { method: "GET", headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` } });
+        const r = await fetch(
+          `http://localhost:5000/progress/attempts/by-email/${encodeURIComponent(selectedStudent.email)}/${newDay}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
         const d = await r.json();
         setAttemptData(d);
       }
@@ -250,45 +296,46 @@ export default function MentorDashboard() {
 
   return (
     <div className="dashboard-page-wrapper">
-      {/* Navbar - Updated to match Login Theme */}
-      <header className="dashboard-hero-section">
-        <div className="dashboard-nav-container">
-          <nav className="dashboard-nav">
-            <div className="logo-wrap">
-              <h2 style={{ margin: 0, color: '#111', fontFamily: 'Outfit', fontWeight: 800 }}>LearnFlow</h2>
-            </div>
-            <div className="dashboard-auth-buttons">
-              <span className="user-name-display">{fullName}</span>
-              <button
-                className="logout-btn"
-                onClick={async () => {
-                  const authToken = sessionStorage.getItem("token") || token;
-                  if (authToken) {
-                    try {
-                      await fetch("http://localhost:5000/api/logout", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${authToken}`,
-                        },
-                      });
-                    } catch (err) {
-                      console.error("Logout API failed:", err);
+      <div className="dashboard-header-wrapper">
+        <header className="dashboard-header">
+          <div className="dashboard-nav-container">
+            <nav className="dashboard-nav">
+              <div className="logo-wrap">
+                <img src="/images/Logo.png" alt="RoboHub Logo" />
+              </div>
+              <div className="dashboard-auth-buttons">
+                <span className="student-name">{fullName}</span>
+                <button
+                  className="button-secondary"
+                  onClick={async () => {
+                    const authToken = sessionStorage.getItem("token") || token;
+                    if (authToken) {
+                      try {
+                        await fetch("http://localhost:5000/api/logout", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${authToken}`,
+                          },
+                        });
+                      } catch (err) {
+                        console.error("Logout API failed:", err);
+                      }
                     }
-                  }
-                  setToken(null);
-                  sessionStorage.removeItem("token");
-                  sessionStorage.removeItem("fullName");
-                  sessionStorage.removeItem("role");
-                  navigate("/");
-                }}
-              >
-                <i className="fas fa-sign-out-alt"></i> Logout
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
+                    setToken(null);
+                    sessionStorage.removeItem("token");
+                    sessionStorage.removeItem("fullName");
+                    sessionStorage.removeItem("role");
+                    navigate("/");
+                  }}
+                >
+                  <i className="fas fa-sign-out-alt"></i> Logout
+                </button>
+              </div>
+            </nav>
+          </div>
+        </header>
+      </div>
 
       {/* Dashboard Content */}
       <div className="dashboard-container">
@@ -390,7 +437,7 @@ export default function MentorDashboard() {
                     <td data-label="Score">
                       <span
                         className={`score-badge ${getScoreBadgeClass(
-                          student.score
+                          student.score,
                         )}`}
                       >
                         {student.score}%
@@ -416,14 +463,34 @@ export default function MentorDashboard() {
             className="attempts-modal-overlay"
             onClick={() => setAttemptsOpen(false)}
           >
-            <div className="attempts-modal" onClick={(e) => e.stopPropagation()}>
-              <button className="attempts-close" onClick={() => setAttemptsOpen(false)}>×</button>
-              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                <h3 style={{margin:0}}>Attempts — {selectedStudent?.fullName || selectedStudent?.email}</h3>
+            <div
+              className="attempts-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="attempts-close"
+                onClick={() => setAttemptsOpen(false)}
+              >
+                ×
+              </button>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <h3 style={{ margin: 0 }}>
+                  Attempts —{" "}
+                  {selectedStudent?.fullName || selectedStudent?.email}
+                </h3>
                 <div>
                   {availableDays && availableDays.length > 0 && (
-                    <select value={selectedDay || ''} onChange={(e)=> changeDay(e.target.value)}>
-                      {availableDays.map(d=> (
+                    <select
+                      value={selectedDay || ""}
+                      onChange={(e) => changeDay(e.target.value)}
+                    >
+                      {availableDays.map((d) => (
                         <option key={d} value={d}>{`Day ${d}`}</option>
                       ))}
                     </select>
@@ -443,12 +510,18 @@ export default function MentorDashboard() {
                       // resolve selected index and text
                       let selectedIdx = null;
                       let selectedText = "-";
-                      if (typeof rawSelected === "number" || !isNaN(Number(rawSelected))) {
+                      if (
+                        typeof rawSelected === "number" ||
+                        !isNaN(Number(rawSelected))
+                      ) {
                         selectedIdx = Number(rawSelected);
-                        selectedText = options[selectedIdx] ?? String(rawSelected);
+                        selectedText =
+                          options[selectedIdx] ?? String(rawSelected);
                       } else if (typeof rawSelected === "string") {
                         // try to find option index by matching text
-                        const idx = options.findIndex(opt => opt === rawSelected);
+                        const idx = options.findIndex(
+                          (opt) => opt === rawSelected,
+                        );
                         if (idx >= 0) {
                           selectedIdx = idx;
                           selectedText = options[idx];
@@ -459,11 +532,16 @@ export default function MentorDashboard() {
 
                       let correctIdx = null;
                       let correctText = "-";
-                      if (typeof rawCorrect === "number" || !isNaN(Number(rawCorrect))) {
+                      if (
+                        typeof rawCorrect === "number" ||
+                        !isNaN(Number(rawCorrect))
+                      ) {
                         correctIdx = Number(rawCorrect);
                         correctText = options[correctIdx] ?? String(rawCorrect);
                       } else if (typeof rawCorrect === "string") {
-                        const idx = options.findIndex(opt => opt === rawCorrect);
+                        const idx = options.findIndex(
+                          (opt) => opt === rawCorrect,
+                        );
                         if (idx >= 0) {
                           correctIdx = idx;
                           correctText = options[idx];
@@ -472,15 +550,23 @@ export default function MentorDashboard() {
                         }
                       }
 
-                      const isCorrect = correctIdx !== null && selectedIdx !== null && Number(selectedIdx) === Number(correctIdx);
+                      const isCorrect =
+                        correctIdx !== null &&
+                        selectedIdx !== null &&
+                        Number(selectedIdx) === Number(correctIdx);
 
                       return (
                         <li key={i} className="mcq-item">
                           <div className="mcq-q">{q.question}</div>
 
                           <div className="mcq-meta">
-                            <div className={`mcq-selected ${isCorrect ? 'mcq-ok' : 'mcq-wrong'}`}>
-                              <strong>Selected (Option {selectedIdx !== null ? selectedIdx : '-' }):</strong>
+                            <div
+                              className={`mcq-selected ${isCorrect ? "mcq-ok" : "mcq-wrong"}`}
+                            >
+                              <strong>
+                                Selected (Option{" "}
+                                {selectedIdx !== null ? selectedIdx : "-"}):
+                              </strong>
                               <span> {selectedText}</span>
                             </div>
 
@@ -496,8 +582,12 @@ export default function MentorDashboard() {
                           {options && options.length > 0 && (
                             <ol className="mcq-options">
                               {options.map((opt, oi) => (
-                                <li key={oi} className={`mcq-option-item ${oi === correctIdx ? 'option-correct' : ''} ${oi === selectedIdx && oi !== correctIdx ? 'option-selected-wrong' : ''}`}>
-                                  <span className="option-index">{oi}.</span> <span className="option-text">{opt}</span>
+                                <li
+                                  key={oi}
+                                  className={`mcq-option-item ${oi === correctIdx ? "option-correct" : ""} ${oi === selectedIdx && oi !== correctIdx ? "option-selected-wrong" : ""}`}
+                                >
+                                  <span className="option-index">{oi}.</span>{" "}
+                                  <span className="option-text">{opt}</span>
                                 </li>
                               ))}
                             </ol>
@@ -516,11 +606,23 @@ export default function MentorDashboard() {
                 {attemptData.theory && attemptData.theory.length ? (
                   <ul className="theory-list">
                     {attemptData.theory.map((t, i) => {
-                      const answerText = (t.selectedAnswer || t.answer || "").trim();
-                      const expected = Array.isArray(t.expectedKeywords) ? t.expectedKeywords.filter(Boolean) : (t.expectedKeywords ? [t.expectedKeywords] : []);
+                      const answerText = (
+                        t.selectedAnswer ||
+                        t.answer ||
+                        ""
+                      ).trim();
+                      const expected = Array.isArray(t.expectedKeywords)
+                        ? t.expectedKeywords.filter(Boolean)
+                        : t.expectedKeywords
+                          ? [t.expectedKeywords]
+                          : [];
                       const lowerAnswer = answerText.toLowerCase();
-                      const matched = expected.filter(k => lowerAnswer.includes(String(k).toLowerCase()));
-                      const wordCount = answerText ? answerText.split(/\s+/).filter(Boolean).length : 0;
+                      const matched = expected.filter((k) =>
+                        lowerAnswer.includes(String(k).toLowerCase()),
+                      );
+                      const wordCount = answerText
+                        ? answerText.split(/\s+/).filter(Boolean).length
+                        : 0;
                       const charCount = answerText.length;
 
                       return (
@@ -528,29 +630,40 @@ export default function MentorDashboard() {
                           <div className="theory-q">{t.question}</div>
 
                           <div className="theory-meta">
-                            <div className="theory-stats">{wordCount} words • {charCount} chars</div>
+                            <div className="theory-stats">
+                              {wordCount} words • {charCount} chars
+                            </div>
                             {expected && expected.length > 0 && (
                               <div className="expected-keywords">
                                 <strong>Expected keywords:</strong>
                                 <div className="keyword-list">
                                   {expected.map((k, ki) => (
-                                    <span key={ki} className={`keyword-badge ${matched.includes(k) ? 'keyword-matched' : 'keyword-unmatched'}`}>
+                                    <span
+                                      key={ki}
+                                      className={`keyword-badge ${matched.includes(k) ? "keyword-matched" : "keyword-unmatched"}`}
+                                    >
                                       {k}
                                     </span>
                                   ))}
                                 </div>
-                                <div className="keyword-summary">Matched {matched.length} of {expected.length}</div>
+                                <div className="keyword-summary">
+                                  Matched {matched.length} of {expected.length}
+                                </div>
                               </div>
                             )}
                           </div>
 
-                          <div className="theory-answer">{answerText || <em>No answer provided</em>}</div>
+                          <div className="theory-answer">
+                            {answerText || <em>No answer provided</em>}
+                          </div>
                         </li>
                       );
                     })}
                   </ul>
                 ) : (
-                  <div className="empty">No theory responses stored for this day.</div>
+                  <div className="empty">
+                    No theory responses stored for this day.
+                  </div>
                 )}
               </div>
             </div>
