@@ -199,7 +199,7 @@ export default function Register() {
             </div>
             <div className="auth-buttons">
               <button className="btn-back-home" onClick={() => navigate("/")}>
-                <i className="fas fa-arrow-left"></i> Home
+                <i className="fas fa-arrow-left"></i> <span>Home</span>
               </button>
             </div>
           </nav>

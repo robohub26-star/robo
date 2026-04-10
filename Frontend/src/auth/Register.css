@@ -1,24 +1,28 @@
-/* Register.css */
 /* Background & Layout matching the Login Page */
 .register-page-wrapper {
   min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height - fixes iOS Safari bottom bar */
   background-color: #f8fafd;
   font-family: "Outfit", sans-serif;
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%; /* iOS Safari, older Chrome */
+  -moz-text-size-adjust: 100%; /* Firefox */
+  -ms-text-size-adjust: 100%; /* IE/Edge legacy */
+  text-size-adjust: 100%; /* Standard */
 }
 
 /* =======================
-   HEADER / NAVBAR - MATCHING LOGIN PAGE
+   HEADER / NAVBAR
 ======================= */
 .register-hero-section {
   position: fixed;
-  top: 20px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 40px);
+  width: calc(100% - 24px);
   max-width: 1400px;
   z-index: 1000;
-  padding: 12px 32px;
+  padding: 10px 20px;
 
   display: flex;
   align-items: center;
@@ -31,6 +35,11 @@
   border-radius: 80px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+
+  /* iOS safe area support */
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
 }
 
 .register-hero-section.scrolled {
@@ -39,7 +48,7 @@
   max-width: 100%;
   border-radius: 0;
   background: rgba(255, 255, 255, 0.98);
-  padding: 12px 5vw;
+  padding: 10px max(20px, env(safe-area-inset-left));
 }
 
 .register-container {
@@ -56,12 +65,14 @@
 .logo-wrap {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .logo-wrap img {
-  height: 45px;
+  height: 38px;
   width: auto;
   object-fit: contain;
+  display: block;
 }
 
 /* NAVIGATION */
@@ -70,26 +81,36 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  gap: 12px;
 }
 
 /* BUTTONS */
 .auth-buttons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
+  flex-shrink: 0;
+  padding-left: 0 !important; /* Override the old media-query override */
 }
 
 .btn-back-home {
   background: transparent;
   border: 1px solid #ccc;
   color: #111;
-  padding: 10px 24px;
+  padding: 9px 18px;
   border-radius: 40px;
   font-family: "Outfit", sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  white-space: nowrap;
+  min-height: 44px; /* Minimum touch target */
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 170px;
 }
 
 .btn-back-home:hover {
@@ -98,24 +119,16 @@
   color: #0066ff;
 }
 
-/* RESPONSIVE FIXES */
-@media (max-width: 900px) {
-  .auth-buttons {
-    padding-left: 35% !important;
-  }
-
-  .register-hero-section {
-    top: 16px;
-    padding: 10px 24px;
-  }
-}
-
-/* Form Section */
+/* =======================
+   MAIN SECTION
+======================= */
 .register-main-section {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 120px 20px 60px;
+  align-items: flex-start;
+  padding: 100px 16px 40px;
+  /* iOS safe areas */
+  padding-bottom: max(40px, env(safe-area-inset-bottom));
 }
 
 .register-content-container {
@@ -125,23 +138,24 @@
 }
 
 .register-title {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #111;
-  margin-bottom: 10px;
-  margin-top: 30px;
+  margin-bottom: 8px;
+  margin-top: 24px;
   letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .register-subtitle {
   color: #666;
-  margin-bottom: 30px;
-  font-size: 1.05rem;
+  margin-bottom: 24px;
+  font-size: 1rem;
 }
 
 .register-card {
   background: white;
-  padding: 40px;
+  padding: 32px;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   text-align: left;
@@ -166,25 +180,33 @@
 
 /* Role Selection Boxes */
 .role-heading {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #111;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.role-selection-grid {
+  display: flex;
+  flex-direction: column;
 }
 
 .role-option {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
+  gap: 16px;
+  padding: 18px;
   border: 2px solid #eee;
   border-radius: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   cursor: pointer;
   transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent; /* Remove tap flash on mobile */
+  min-height: 44px;
 }
 
-.role-option:hover {
+.role-option:hover,
+.role-option:active {
   border-color: #0066ff;
   background: rgba(0, 102, 255, 0.02);
   transform: translateY(-2px);
@@ -192,8 +214,9 @@
 
 .icon-wrapper {
   background: rgba(0, 102, 255, 0.08);
-  width: 50px;
-  height: 50px;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -201,48 +224,58 @@
 }
 
 .role-option i {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: #0066ff;
 }
 
 .role-text h4 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #111;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .role-text p {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: #666;
   margin: 0;
+  line-height: 1.4;
 }
 
 /* Form Inputs */
+.register-form {
+  width: 100%;
+}
+
 .form-row {
   display: flex;
-  gap: 15px;
+  gap: 14px;
 }
 
 .input-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   flex: 1;
+  min-width: 0; /* Prevent overflow in flex */
 }
 
 .input-group label {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 7px;
   color: #333;
 }
 
 .input-group input {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 16px; /* 16px prevents iOS zoom on focus */
   font-family: "Inter", sans-serif;
   outline: none;
   transition:
@@ -250,6 +283,9 @@
     box-shadow 0.3s;
   background: #fff;
   box-sizing: border-box;
+  -webkit-appearance: none; /* Consistent look across iOS/Android */
+  appearance: none;
+  min-height: 44px; /* Accessible touch target */
 }
 
 .input-group input:focus {
@@ -260,8 +296,8 @@
 /* Action Buttons */
 .form-footer-actions {
   display: flex;
-  gap: 15px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .btn-submit {
@@ -276,12 +312,18 @@
   cursor: pointer;
   transition: all 0.3s;
   font-family: "Outfit", sans-serif;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-submit:hover {
   background: #333;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
 }
 
 .btn-back {
@@ -294,6 +336,9 @@
   cursor: pointer;
   transition: all 0.3s;
   font-family: "Outfit", sans-serif;
+  min-height: 48px;
+  font-size: 0.9rem;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-back:hover {
@@ -302,9 +347,9 @@
 
 /* Footer Link */
 .register-footer-text {
-  margin-top: 25px;
+  margin-top: 20px;
   color: #666;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
 }
 
 .register-footer-text span {
@@ -318,22 +363,26 @@
   text-decoration: underline;
 }
 
-/* Toast Notifications - Matching Login Page */
+/* =======================
+   TOAST NOTIFICATIONS
+======================= */
 .toast {
   position: fixed;
   top: 20px;
-  right: -300px;
-  padding: 15px 25px;
+  right: -350px;
+  padding: 14px 22px;
   border-radius: 8px;
   color: white;
   font-weight: 600;
+  font-size: 0.9rem;
   transition: right 0.4s ease-in-out;
-  z-index: 2000;
+  z-index: 3000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: calc(100vw - 32px);
 }
 
 .toast.show {
-  right: 20px;
+  right: 16px;
 }
 
 .toast.success {
@@ -344,23 +393,9 @@
   background-color: #ef4444;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .form-row {
-    flex-direction: column;
-    gap: 0;
-  }
-  .register-card {
-    padding: 25px;
-  }
-  .register-title {
-    font-size: 1.8rem;
-  }
-}
-
-/* Add to both Login.css and Register.css */
-
-/* Secret hint styling */
+/* =======================
+   SECRET / MENTOR STYLES
+======================= */
 .secret-hint {
   text-align: center;
   margin-bottom: 20px;
@@ -380,27 +415,28 @@
   border-top: 1px solid #eee;
 }
 
-/* Mentor option special styling */
 .mentor-option {
   border-color: #ff9800;
   background: rgba(255, 152, 0, 0.05);
 }
 
-.mentor-option:hover {
+.mentor-option:hover,
+.mentor-option:active {
   border-color: #ff9800;
   background: rgba(255, 152, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .admin-badge {
   background: #ff9800;
   color: white;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   padding: 2px 6px;
   border-radius: 12px;
-  margin-left: 8px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-/* Role toggle buttons for mentor */
 .role-toggle-btn {
   flex: 1;
   padding: 10px;
@@ -413,6 +449,7 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 44px;
 }
 
 .role-toggle-btn.active {
@@ -428,21 +465,22 @@
 }
 
 /* =======================
-   ADMIN SECRET MODAL STYLES
+   ADMIN SECRET MODAL
 ======================= */
 .secret-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: 20px;
+  padding: 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
   animation: fadeIn 0.3s ease-out;
+  /* Prevent scroll-behind on iOS */
+  overflow-y: auto;
 }
 
 .secret-modal {
@@ -453,6 +491,9 @@
   max-width: 420px;
   overflow: hidden;
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
 }
 
 @keyframes slideUp {
@@ -469,26 +510,33 @@
 .modal-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 24px;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  flex: 1;
+  min-width: 0;
 }
 
 .modal-close-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  font-size: 1.5rem;
-  width: 36px;
-  height: 36px;
+  font-size: 1.3rem;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
   border-radius: 8px;
   cursor: pointer;
   display: flex;
@@ -496,26 +544,28 @@
   justify-content: center;
   transition: all 0.3s;
   font-weight: 300;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.modal-close-btn:hover {
+.modal-close-btn:hover,
+.modal-close-btn:active {
   background: rgba(255, 255, 255, 0.3);
   transform: rotate(90deg);
 }
 
 .modal-content {
-  padding: 32px 24px;
+  padding: 28px 20px;
 }
 
 .modal-description {
   color: #666;
-  font-size: 0.95rem;
-  margin: 0 0 24px 0;
-  line-height: 1.5;
+  font-size: 0.93rem;
+  margin: 0 0 22px 0;
+  line-height: 1.55;
 }
 
 .secret-input-group {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .secret-input-group label {
@@ -523,7 +573,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: #333;
-  margin-bottom: 10px;
+  margin-bottom: 9px;
 }
 
 .secret-input-group input {
@@ -531,12 +581,15 @@
   padding: 12px 16px;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 16px; /* Prevents zoom on iOS */
   font-family: "Outfit", sans-serif;
   outline: none;
   transition: all 0.3s;
   box-sizing: border-box;
   background: #f9fafb;
+  min-height: 48px;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .secret-input-group input:focus {
@@ -551,22 +604,24 @@
 
 .modal-footer {
   display: flex;
-  gap: 12px;
-  padding: 20px 24px 24px;
+  gap: 10px;
+  padding: 16px 20px 20px;
   border-top: 1px solid #eee;
 }
 
 .btn-cancel,
 .btn-confirm {
   flex: 1;
-  padding: 12px 24px;
+  padding: 13px 20px;
   border: none;
   border-radius: 10px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   cursor: pointer;
   transition: all 0.3s;
   font-family: "Outfit", sans-serif;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-cancel {
@@ -574,7 +629,8 @@
   color: #333;
 }
 
-.btn-cancel:hover:not(:disabled) {
+.btn-cancel:hover:not(:disabled),
+.btn-cancel:active:not(:disabled) {
   background: #e5e7eb;
   transform: translateY(-1px);
 }
@@ -584,7 +640,8 @@
   color: white;
 }
 
-.btn-confirm:hover:not(:disabled) {
+.btn-confirm:hover:not(:disabled),
+.btn-confirm:active:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
 }
@@ -593,19 +650,243 @@
 .btn-confirm:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Responsive modal */
-@media (max-width: 600px) {
+/* =======================
+   RESPONSIVE — TABLET
+======================= */
+@media (max-width: 768px) {
+  .register-hero-section {
+    top: 10px;
+    width: calc(100% - 20px);
+    padding: 9px 16px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .logo-wrap img {
+    height: 34px;
+  }
+
+  .btn-back-home {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
+  .register-main-section {
+    padding: 90px 14px 32px;
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+  }
+
+  .register-card {
+    padding: 24px 20px;
+  }
+
+  .register-title {
+    font-size: 1.75rem;
+  }
+}
+
+/* =======================
+   RESPONSIVE — MOBILE (≤480px)
+======================= */
+@media (max-width: 480px) {
+  .register-hero-section {
+    top: 8px;
+    width: calc(100% - 16px);
+    padding: 8px 14px;
+    border-radius: 50px;
+  }
+
+  .logo-wrap img {
+    height: 30px;
+  }
+
+  .btn-back-home {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+  }
+
+  .register-main-section {
+    padding: 80px 12px 28px;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+
+  .register-title {
+    font-size: 1.55rem;
+    margin-top: 18px;
+  }
+
+  .register-subtitle {
+    font-size: 0.92rem;
+    margin-bottom: 18px;
+  }
+
+  .register-card {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  /* Stack form rows on mobile */
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .input-group {
+    margin-bottom: 15px;
+  }
+
+  .role-option {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .icon-wrapper {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+  }
+
+  .role-option i {
+    font-size: 1.2rem;
+  }
+
+  .role-text h4 {
+    font-size: 0.95rem;
+  }
+
+  .form-footer-actions {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-back {
+    flex: 0 0 auto;
+    width: 90px;
+  }
+
+  .btn-submit {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Modal on small screens */
+  .secret-modal-overlay {
+    padding: 12px;
+    align-items: flex-end; /* Sheet-style from bottom on mobile */
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
   .secret-modal {
-    max-width: 90%;
+    max-width: 100%;
+    border-radius: 20px 20px 16px 16px;
+    max-height: 85vh;
+    max-height: 85dvh;
+  }
+
+  .modal-header {
+    padding: 16px;
   }
 
   .modal-header h2 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
   }
 
   .modal-content {
-    padding: 24px 16px;
+    padding: 20px 16px;
+  }
+
+  .modal-footer {
+    padding: 14px 16px 16px;
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    width: 100%;
+    flex: none;
+  }
+
+  /* Toast stays readable on narrow screens */
+  .toast {
+    top: auto;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    right: 16px;
+    left: 16px;
+    text-align: center;
+    max-width: none;
+    border-radius: 10px;
+  }
+
+  .toast.show {
+    right: 16px;
+  }
+}
+
+/* =======================
+   RESPONSIVE — VERY SMALL (≤360px)
+   Covers older Android phones, Galaxy A series etc.
+======================= */
+@media (max-width: 360px) {
+  .register-title {
+    font-size: 1.4rem;
+  }
+
+  .register-card {
+    padding: 16px 14px;
+  }
+
+  .btn-back-home span {
+    display: none; /* Hide "Home" text, keep arrow icon only */
+  }
+
+  .btn-back-home {
+    padding: 8px 10px;
+  }
+
+  .input-group input,
+  .secret-input-group input {
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+
+  .role-text h4 {
+    font-size: 0.9rem;
+  }
+
+  .role-text p {
+    font-size: 0.82rem;
+  }
+}
+
+/* =======================
+   LANDSCAPE PHONE FIX
+   e.g. iPhone SE landscape, Galaxy S landscape
+======================= */
+@media (max-height: 500px) and (orientation: landscape) {
+  .register-hero-section {
+    top: 6px;
+    padding: 7px 16px;
+  }
+
+  .register-main-section {
+    padding-top: 70px;
+  }
+
+  .register-title {
+    font-size: 1.4rem;
+    margin-top: 12px;
+  }
+
+  .secret-modal-overlay {
+    align-items: center;
+  }
+
+  .secret-modal {
+    max-height: 80vh;
+    max-height: 80dvh;
   }
 }

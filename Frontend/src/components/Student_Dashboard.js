@@ -222,9 +222,9 @@ export default function StudentDashboard() {
             <h2 className="section-title">Your Instructors</h2>
             <div className="instructors-stack">
               {[
-                { name: "Sheeram MV", initials: "SR", role: "Lead Instructor", color: "blue" },
-                { name: "Badrikanath Prahraj", initials: "BP", role: "Network Specialist", color: "purple" },
-                { name: "Abhishek S", initials: "AS", role: "5G Implementation", color: "green" },
+                { name: "Sheeram MV", initials: "SR", role: "Instructor", color: "blue" },
+                { name: "Badrikanath Prahraj", initials: "BP", role: "Instructor", color: "purple" },
+                { name: "Abhishek S", initials: "AS", role: "Instructor", color: "green" },
               ].map((inst) => (
                 <div className="instructor-row-card" key={inst.name}>
                   <div className={`instructor-avatar ${inst.color}`}>{inst.initials}</div>

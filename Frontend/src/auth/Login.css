@@ -3,8 +3,14 @@
 ======================= */
 .login-page-wrapper {
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: #f8fafd;
   font-family: "Outfit", sans-serif;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* =======================
@@ -12,13 +18,15 @@
 ======================= */
 .login-hero-section {
   position: fixed;
-  top: 20px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 40px);
+  width: calc(100% - 24px);
   max-width: 1400px;
   z-index: 1000;
-  padding: 12px 32px;
+  padding: 10px 20px;
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
 
   display: flex;
   align-items: center;
@@ -31,6 +39,7 @@
   border-radius: 80px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
 .login-hero-section.scrolled {
@@ -39,7 +48,7 @@
   max-width: 100%;
   border-radius: 0;
   background: rgba(255, 255, 255, 0.98);
-  padding: 12px 5vw;
+  padding: 10px max(20px, env(safe-area-inset-left));
 }
 
 .login-container {
@@ -56,20 +65,23 @@
 .logo-wrap {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .logo-wrap img {
-  height: 45px;
+  height: 38px;
   width: auto;
   object-fit: contain;
+  display: block;
 }
 
-/* NAVIGATION LINKS */
+/* NAVIGATION */
 .login-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  gap: 12px;
 }
 
 .login-nav a {
@@ -82,6 +94,7 @@
   position: relative;
   text-decoration: none;
   transition: color 0.2s ease;
+  white-space: nowrap;
 }
 
 .login-nav a:hover,
@@ -115,19 +128,30 @@
   margin-left: 15px;
   padding-left: 25px;
   border-left: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  padding-left: 0 !important;
 }
 
 .btn-nav-login {
   background: transparent;
   border: 1px solid #ccc;
   color: #111;
-  padding: 10px 24px;
+  padding: 9px 20px;
   border-radius: 40px;
   font-family: "Outfit", sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
 }
 
 .btn-nav-login:hover {
@@ -140,7 +164,7 @@
   background: #111;
   border: none;
   color: white;
-  padding: 10px 24px;
+  padding: 9px 20px;
   border-radius: 40px;
   font-family: "Outfit", sans-serif;
   font-weight: 600;
@@ -148,6 +172,8 @@
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 44px;
+  white-space: nowrap;
 }
 
 .btn-nav-register:hover {
@@ -156,25 +182,30 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* RESPONSIVE FIXES */
-@media (max-width: 900px) {
-  .auth-buttons {
-    padding-left: 37% !important;
-  }
+.btn-back-home {
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #111;
+  padding: 9px 18px;
+  border-radius: 40px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+  margin-left: 170px;
+}
 
-  .login-nav a {
-    display: none;
-  }
-
-  .auth-nav-buttons {
-    border-left: none;
-    padding-left: 0;
-  }
-
-  .login-hero-section {
-    top: 16px;
-    padding: 10px 24px;
-  }
+.btn-back-home:hover {
+  background: #f8fafd;
+  border-color: #0066ff;
+  color: #0066ff;
 }
 
 /* =======================
@@ -183,9 +214,12 @@
 .login-main-section {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 120px 20px 60px;
-  /* added top padding to account for fixed navbar */
+  align-items: flex-start;
+  padding: 100px 16px 40px;
+  padding-bottom: max(40px, env(safe-area-inset-bottom));
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
 }
 
 .login-content-container {
@@ -195,24 +229,29 @@
 }
 
 .login-title {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #111;
-  margin-bottom: 10px;
-  margin-top: 30px;
+  margin-bottom: 8px;
+  margin-top: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .login-subtitle {
   color: #666;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .login-card {
   background: white;
-  padding: 40px;
+  padding: 32px;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   text-align: left;
+  border: 1px solid #eef2f6;
 }
 
 /* =======================
@@ -236,6 +275,8 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .role-toggle-btn:hover {
@@ -252,7 +293,7 @@
    FORM INPUTS
 ======================= */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .form-group label {
@@ -265,21 +306,32 @@
 
 .form-group input {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 16px; /* Prevents iOS Safari zoom on focus */
+  font-family: "Outfit", sans-serif;
   outline: none;
-  transition: border 0.3s;
-  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  transition: border 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+  background: #fff;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 48px;
+  color: #111;
 }
 
 .form-group input:focus {
   border-color: #0066ff;
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #bbb;
 }
 
 /* =======================
-   BUTTON
+   SUBMIT BUTTON
 ======================= */
 .login-submit-button {
   width: 100%;
@@ -290,27 +342,41 @@
   border-radius: 8px;
   font-weight: 700;
   font-size: 1rem;
+  font-family: "Outfit", sans-serif;
   cursor: pointer;
-  margin-top: 10px;
-  transition: 0.3s;
+  margin-top: 8px;
+  transition: all 0.3s;
+  min-height: 50px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .login-submit-button:hover {
   background: #333;
+  transform: translateY(-1px);
+}
+
+.login-submit-button:active {
+  transform: translateY(0);
 }
 
 /* =======================
    FOOTER
 ======================= */
 .login-footer-text {
-  margin-top: 25px;
+  margin-top: 20px;
   color: #666;
+  font-size: 0.92rem;
 }
 
 .login-footer-text span {
   color: #0066ff;
   font-weight: 600;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.login-footer-text span:hover {
+  text-decoration: underline;
 }
 
 /* =======================
@@ -319,18 +385,20 @@
 .toast {
   position: fixed;
   top: 20px;
-  right: -300px;
-  padding: 15px 25px;
+  right: -350px;
+  padding: 14px 22px;
   border-radius: 8px;
   color: white;
   font-weight: 600;
+  font-size: 0.9rem;
   transition: right 0.4s ease-in-out;
-  z-index: 2000;
+  z-index: 3000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: calc(100vw - 32px);
 }
 
 .toast.show {
-  right: 20px;
+  right: 16px;
 }
 
 .toast.success {
@@ -341,9 +409,9 @@
   background-color: #ef4444;
 }
 
-/* Add to both Login.css and Register.css */
-
-/* Secret hint styling */
+/* =======================
+   MISC SHARED STYLES
+======================= */
 .secret-hint {
   text-align: center;
   margin-bottom: 20px;
@@ -363,7 +431,6 @@
   border-top: 1px solid #eee;
 }
 
-/* Mentor option special styling */
 .mentor-option {
   border-color: #ff9800;
   background: rgba(255, 152, 0, 0.05);
@@ -377,35 +444,190 @@
 .admin-badge {
   background: #ff9800;
   color: white;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   padding: 2px 6px;
   border-radius: 12px;
   margin-left: 8px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-/* Role toggle buttons for mentor */
-.role-toggle-btn {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: transparent;
-  color: #333;
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+/* =======================
+   RESPONSIVE — TABLET (≤768px)
+======================= */
+@media (max-width: 768px) {
+  .login-hero-section {
+    top: 10px;
+    width: calc(100% - 20px);
+    padding: 9px 16px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .logo-wrap img {
+    height: 34px;
+  }
+
+  .login-nav a {
+    display: none;
+  }
+
+  .auth-nav-buttons {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .btn-back-home {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
+  .login-main-section {
+    padding: 90px 14px 32px;
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+  }
+
+  .login-card {
+    padding: 24px 20px;
+  }
+
+  .login-title {
+    font-size: 1.75rem;
+  }
 }
 
-.role-toggle-btn.active {
-  background-color: #111;
-  color: #fff;
-  border-color: #111;
+/* =======================
+   RESPONSIVE — MOBILE (≤480px)
+======================= */
+@media (max-width: 480px) {
+  .login-hero-section {
+    top: 8px;
+    width: calc(100% - 16px);
+    padding: 8px 14px;
+    border-radius: 50px;
+  }
+
+  .logo-wrap img {
+    height: 30px;
+  }
+
+  .btn-back-home {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+  }
+
+  .login-main-section {
+    padding: 80px 12px 28px;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+
+  .login-title {
+    font-size: 1.6rem;
+    margin-top: 18px;
+  }
+
+  .login-subtitle {
+    font-size: 0.92rem;
+    margin-bottom: 18px;
+  }
+
+  .login-card {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .role-toggle-btn {
+    font-size: 0.85rem;
+    padding: 9px 8px;
+  }
+
+  .login-submit-button {
+    font-size: 0.95rem;
+    padding: 13px;
+  }
+
+  /* Toast moves to bottom on mobile */
+  .toast {
+    top: auto;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    right: 16px;
+    left: 16px;
+    text-align: center;
+    max-width: none;
+    border-radius: 10px;
+  }
+
+  .toast.show {
+    right: 16px;
+  }
 }
 
-.role-selection {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+/* =======================
+   RESPONSIVE — VERY SMALL (≤360px)
+   Older Android, Galaxy A series, Moto G
+======================= */
+@media (max-width: 360px) {
+  .login-title {
+    font-size: 1.4rem;
+  }
+
+  .login-card {
+    padding: 16px 14px;
+  }
+
+  /* Hide "Home" text, keep arrow icon only */
+  .btn-back-home span {
+    display: none;
+  }
+
+  .btn-back-home {
+    padding: 8px 10px;
+  }
+
+  .form-group input {
+    padding: 10px 12px;
+  }
+
+  .role-toggle-btn {
+    font-size: 0.8rem;
+    padding: 8px 6px;
+  }
+}
+
+/* =======================
+   LANDSCAPE PHONE FIX
+   iPhone SE landscape, Galaxy S landscape
+======================= */
+@media (max-height: 500px) and (orientation: landscape) {
+  .login-hero-section {
+    top: 6px;
+    padding: 7px 16px;
+  }
+
+  .login-main-section {
+    padding-top: 70px;
+    align-items: flex-start;
+  }
+
+  .login-title {
+    font-size: 1.4rem;
+    margin-top: 12px;
+  }
+
+  .login-subtitle {
+    margin-bottom: 14px;
+    font-size: 0.88rem;
+  }
+
+  .login-card {
+    padding: 18px 16px;
+  }
+
+  .form-group {
+    margin-bottom: 12px;
+  }
 }

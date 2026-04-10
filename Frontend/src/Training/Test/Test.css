@@ -4,10 +4,11 @@
 .test-page-container {
   text-align: center;
   min-height: 100vh;
-  padding-bottom: 40px;
+  height: auto;
+  padding-bottom: 80px;
   font-family: "Outfit", sans-serif;
   background: linear-gradient(135deg, #f5f9ff 0%, #eef3ff 40%, #f8fbff 100%);
-  overflow-y: auto; /* Allow container to scroll */
+  overflow-y: visible; /* Allow container to scroll */
   height: 100%;
 }
 
@@ -61,7 +62,7 @@
 .test-test-container {
   width: 100%;
   max-width: 700px;
-  margin: 40px auto;
+  margin: 20px auto;
   padding: 40px;
 
   background: rgba(255, 255, 255, 0.75);
@@ -163,6 +164,8 @@
   gap: 10px;
   align-items: center;
   margin-top: 20px;
+  margin-bottom: 30px; /* ← ADDED */
+  width: 100%;
 }
 
 .test-button .btn {
